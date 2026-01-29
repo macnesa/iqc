@@ -408,6 +408,261 @@ function OurProjectApproach() {
   );
 }
 
+function WhyChooseUs() {
+  return (
+    <section className="relative w-full bg-white text-[#2f3b2f]">
+
+      <div className="mx-auto max-w-7xl px-16 py-28">
+
+        {/* ===== HEADER (TEXT CENTER ONLY) ===== */}
+        <h2 className="text-center text-[48px] font-bold tracking-tight">
+          WHY CHOOSE US
+        </h2>
+
+        {/* ===== DIVIDER TOP ===== */}
+        <div className="mt-10 h-px w-full bg-[#2f3b2f]/30" />
+
+        {/* ===== CONTENT GRID ===== */}
+        <div className="mt-12 grid grid-cols-5 gap-10">
+
+          {/* ITEM 1 */}
+          <div>
+            <h4 className="text-[14px] font-semibold uppercase tracking-wide">
+              We Plan with Precision
+            </h4>
+            <p className="mt-3 text-[13px] leading-[1.8] text-[#2f3b2f]/75">
+              Every project starts with clear timelines,
+              budgets, and technical coordination.
+            </p>
+          </div>
+
+          {/* ITEM 2 */}
+          <div>
+            <h4 className="text-[14px] font-semibold uppercase tracking-wide">
+              We Supervise Daily
+            </h4>
+            <p className="mt-3 text-[13px] leading-[1.8] text-[#2f3b2f]/75">
+              Consistent on-site management ensures
+              progress and quality.
+            </p>
+          </div>
+
+          {/* ITEM 3 */}
+          <div>
+            <h4 className="text-[14px] font-semibold uppercase tracking-wide">
+              We Communicate Clearly
+            </h4>
+            <p className="mt-3 text-[13px] leading-[1.8] text-[#2f3b2f]/75">
+              Updates, reporting, and client feedback
+              are part of our process.
+            </p>
+          </div>
+
+          {/* ITEM 4 */}
+          <div>
+            <h4 className="text-[14px] font-semibold uppercase tracking-wide">
+              We Deliver on Time
+            </h4>
+            <p className="mt-3 text-[13px] leading-[1.8] text-[#2f3b2f]/75">
+              Schedules are planned realistically
+              and tracked closely.
+            </p>
+          </div>
+
+          {/* ITEM 5 */}
+          <div>
+            <h4 className="text-[14px] font-semibold uppercase tracking-wide">
+              We Control Quality
+            </h4>
+            <p className="mt-3 text-[13px] leading-[1.8] text-[#2f3b2f]/75">
+              Materials and workmanship are
+              inspected at every stage.
+            </p>
+          </div>
+
+        </div>
+
+        {/* ===== DIVIDER BOTTOM ===== */}
+        <div className="mt-14 h-px w-full bg-[#2f3b2f]/30" />
+
+      </div>
+    </section>
+  );
+}
+
+ 
+const CORE_VALUES = [
+  {
+    id: "craftsmanship",
+    title: "CRAFTSMANSHIP",
+    text:
+      "We take pride in our work. Every structure we build reflects attention to detail, solid execution, and long-term durability.",
+    left: "7%",
+    top: "24%",
+  },
+  {
+    id: "transparency",
+    title: "TRANSPARENCY",
+    text:
+      "We believe clear communication builds trust. We keep our clients informed and involved from start to finish.",
+    left: "26%",
+    top: "36%",
+  },
+  {
+    id: "reliability",
+    title: "RELIABILITY",
+    text:
+      "We deliver on our word. Every project is managed carefully, completed on schedule, and built to the standards we promise.",
+    left: "44%",
+    top: "48%",
+  },
+  {
+    id: "accountability",
+    title: "ACCOUNTABILITY",
+    text:
+      "We stand by our commitments — to our clients, our team, and the quality of our work.",
+    left: "61%",
+    top: "60%",
+  },
+  {
+    id: "respect",
+    title: "RESPECT",
+    text:
+      "We value the people, communities, and culture that make Bali unique, and approach every project with that respect in mind.",
+    left: "78%",
+    top: "72%",
+  },
+];
+
+ function CoreValues() {
+  return (
+    <section
+      className="relative w-full overflow-hidden text-white"
+      style={{
+        height: "100vh",            // ⛔ tetap h-screen behavior
+        paddingBottom: "220px",     // ✅ buffer aman untuk house image
+      }}
+    >
+      {/* =====================================================
+          BACKGROUND BASE
+      ====================================================== */}
+      <div className="absolute inset-0 z-0 bg-[#2c3627]" />
+
+      {/* =====================================================
+          TEXTURE (PASTI DI BAWAH SEMUA KONTEN)
+      ====================================================== */}
+      <div className="absolute inset-0 z-[5] opacity-10 pointer-events-none">
+        <Image
+          src="/images/image_2026-01-28_20-39-35.png"
+          alt=""
+          fill
+          priority
+          className="object-cover"
+        />
+      </div>
+
+      {/* =====================================================
+          LOGO — VISUAL LOCK
+      ====================================================== */}
+      <div className="absolute left-12 top-10 z-30 text-[11px] tracking-[0.28em] uppercase text-white/80">
+        ICONIC QUALITY CONSULTANTS
+      </div>
+
+      {/* =====================================================
+          RIGHT TITLE — VISUAL LOCK
+      ====================================================== */}
+      <div className="absolute right-20 top-[34%] z-30 max-w-md">
+        <h2 className="text-[56px] font-bold leading-tight tracking-tight">
+          CORE VALUES
+        </h2>
+        <p className="mt-6 text-[15px] leading-[1.8] text-white/80">
+          Our work is guided by values shaped through years of experience abroad
+          and a deep understanding of Bali. These principles define how we build,
+          how we communicate, and how we deliver every project.
+        </p>
+      </div>
+
+      {/* =====================================================
+          VALUES — VIEWPORT-RELATIVE COORDINATES
+      ====================================================== */}
+      <div className="absolute inset-0 z-30">
+        {CORE_VALUES.map((item) => (
+          <Value
+            key={item.id}
+            left={item.left}
+            top={item.top}
+            title={item.title}
+            text={item.text}
+          />
+        ))}
+      </div>
+
+      {/* =====================================================
+          HOUSE IMAGE — DECOR (STRICTLY BELOW CONTENT)
+      ====================================================== */}
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 z-20">
+        <Image
+          src="/images/image_2026-01-28_20-39-12.png"
+          alt=""
+          width={1920}
+          height={800}
+          priority
+          className="w-full object-contain"
+        />
+      </div>
+
+      {/* =====================================================
+          MOBILE GUARD (DESKTOP ONLY SECTION)
+      ====================================================== */}
+      <div className="fixed inset-0 z-[999] hidden items-center justify-center bg-[#2c3627] text-center text-sm text-white md:hidden">
+        <p className="max-w-xs leading-relaxed text-white/70">
+          This section is optimized for larger screens to preserve visual
+          clarity and composition.
+        </p>
+      </div>
+    </section>
+  );
+}
+
+/**
+ * =========================================================
+ * VALUE ITEM — VISUAL IDENTICAL
+ * =========================================================
+ */
+
+function Value({ left, top, title, text }) {
+  return (
+    <div
+      className="absolute max-w-[260px]"
+      style={{ left, top }}
+    >
+      <div className="relative pl-6">
+        {/* LINE */}
+        <span
+          className="absolute left-[2px] top-[6px] bg-white/55"
+          style={{ height: "3.5rem", width: "1px" }}
+        />
+
+        {/* DOT */}
+        <span
+          className="absolute left-0 top-[6px] rounded-full bg-white"
+          style={{ width: "6px", height: "6px" }}
+        />
+
+        <h4 className="text-[13px] font-semibold tracking-wide">
+          {title}
+        </h4>
+
+        <p className="mt-2 text-[12px] leading-[1.7] text-white/80">
+          {text}
+        </p>
+      </div>
+    </div>
+  );
+}
+
+
+
 
 function Footer() {
   return (
@@ -494,8 +749,10 @@ export default function Page() {
      <Hero/>
      <About/>
      <VisionMissionPurpose/>
+     <CoreValues/>
      <ScopeOfServices/>
      <OurProjectApproach/>
+     <WhyChooseUs/>
      <Footer/>
      </>
   );

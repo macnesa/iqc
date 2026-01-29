@@ -1,5 +1,6 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import Providers from "./providers";
  
 export const metadata = {
   title: "iQC — Iconic Quality Consultants",
@@ -13,7 +14,9 @@ export default function RootLayout({ children }) {
       <body
         className={`antialiased`}
       >
+        <Providers>
         {children}
+        </Providers>
       </body>
     </html>
   );

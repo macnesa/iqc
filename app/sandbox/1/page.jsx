@@ -1,14 +1,166 @@
 "use client"
 import Image from "next/image";
+import React, { Fragment, useLayoutEffect, useRef, useContext, useState, useEffect, useMemo, useId } from "react";
+import { motion, useScroll, useTransform } from "framer-motion";
 
+function Header() {
+  const headerRef = useRef(null);
 
+  // =========================
+  // SCROLL STATES
+  // =========================
+  const lastScrollY = useRef(0);
+  const ticking = useRef(false);
+
+  const [hidden, setHidden] = useState(true);
+  const [enabled, setEnabled] = useState(false);
+
+  // =========================
+  // SCROLL LOGIC
+  // =========================
+  useEffect(() => {
+    const threshold = 8;
+
+    const onScroll = () => {
+      const currentY = window.scrollY;
+      const triggerY = window.innerHeight * 1.01;
+
+      if (!ticking.current) {
+        window.requestAnimationFrame(() => {
+          if (currentY >= triggerY) {
+            setEnabled(true);
+          } else {
+            setEnabled(false);
+            setHidden(true);
+            lastScrollY.current = currentY;
+            ticking.current = false;
+            return;
+          }
+
+          const diff = currentY - lastScrollY.current;
+
+          if (diff > threshold) setHidden(true);
+          if (diff < -threshold) setHidden(false);
+
+          lastScrollY.current = currentY;
+          ticking.current = false;
+        });
+
+        ticking.current = true;
+      }
+    };
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  // =========================
+  // INTERSECTION → DATA-THEME
+  // =========================
+  useEffect(() => {
+    if (!enabled) return;
+
+    const header = headerRef.current;
+    if (!header) return;
+
+    const sections = document.querySelectorAll("[data-theme]");
+    if (!sections.length) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            header.dataset.theme = entry.target.dataset.theme;
+          }
+        });
+      },
+      {
+        rootMargin: "-1px 0px -99% 0px",
+        threshold: 0,
+      }
+    );
+
+    sections.forEach((section) => observer.observe(section));
+    return () => observer.disconnect();
+  }, [enabled]);
+
+  return (
+    <header
+      ref={headerRef}
+      data-theme="light"
+      className={`
+        group
+        fixed top-0 left-0 z-50 w-full
+        bg-transparent
+        transition-transform duration-300 ease-out
+        ${!enabled || hidden ? "-translate-y-full" : "translate-y-0"}
+      `}
+    >
+      <div
+        className="
+          mx-auto
+          flex items-center
+          min-h-[64px] md:min-h-[72px]
+          px-4 sm:px-6 md:px-15
+        "
+      >
+        {/* LOGO — LEFT */}
+        <a href="/" className="block">
+          <img
+            src="/images/Logo IQC - Black C.png"
+            alt="IQC"
+            className="
+              w-20 sm:w-24 md:w-40
+              h-auto
+              transition
+              group-data-[theme=dark]:invert
+            "
+          />
+        </a>
+      </div>
+    </header>
+  );
+}
 
 
 function Hero() {
+  const sectionRef = useRef(null);
+
+  // Track scroll progress relative to this section
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ["start start", "end start"],
+  });
+
+  /**
+   * PARALLAX MAPPING
+   * --------------------------------------------------
+   * Background: slow movement (far depth)
+   * Logo: faster movement + subtle scale (near depth)
+   */
+
+  // Background moves slightly upward
+  const bgY = useTransform(scrollYProgress, [0, 1], ["0%", "18%"]);
+
+  // Logo moves more noticeably
+  const logoY = useTransform(scrollYProgress, [0, 1], ["0%", "-35%"]);
+
+  // Slight scale down to simulate depth-of-field pull
+  const logoScale = useTransform(scrollYProgress, [0, 1], [1, 0.92]);
+
+  // Optional opacity softening (very subtle)
+  const logoOpacity = useTransform(scrollYProgress, [0, 1], [1, 0.85]);
+
   return (
-    <section className="relative min-h-screen w-full overflow-hidden bg-black">
-      {/* Background Image */}
-      <div className="absolute inset-0">
+    <section
+      ref={sectionRef}
+      className="relative min-h-screen w-full overflow-hidden bg-black"
+    >
+      {/* ================= BACKGROUND (FAR PLANE) ================= */}
+      <motion.div
+        style={{ y: bgY }}
+        className="absolute inset-0 will-change-transform"
+      >
         <Image
           src="/images/BG - 1.jpg"
           alt="iQC Abstract Green Background"
@@ -16,27 +168,35 @@ function Hero() {
           priority
           className="object-cover"
         />
-      </div>
+      </motion.div>
 
-      {/* Dark overlay for contrast control */}
+      {/* Overlay for contrast */}
       <div className="absolute inset-0 bg-black/25" />
 
-      {/* Centered Content */}
-      <div className="relative z-10 flex min-h-screen flex-col items-center justify-center px-6 text-center">
-        {/* Logo */}
-        <div className="w-[180px] md:w-[260px] lg:w-[320px]">
-          <Image
-            src="/images/Logo IQC - White A.png"
-            alt="Iconic Quality Consultants Logo"
-            width={640}
-            height={240}
-            priority
-            className="h-auto w-full select-none"
-          />
-        </div>
+      {/* ================= FOREGROUND CONTENT ================= */}
+      <div className="relative z-10 flex min-h-screen items-center justify-center px-6">
+        <motion.div
+          style={{
+            y: logoY,
+            scale: logoScale,
+            opacity: logoOpacity,
+          }}
+          className="will-change-transform"
+        >
+          <div className="w-[180px] md:w-[260px] lg:w-[320px]">
+            <Image
+              src="/images/Logo IQC - White A.png"
+              alt="Iconic Quality Consultants Logo"
+              width={640}
+              height={240}
+              priority
+              className="h-auto w-full select-none"
+            />
+          </div>
+        </motion.div>
       </div>
 
-      {/* Bottom fade */}
+      {/* ================= BOTTOM FADE ================= */}
       <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-black to-transparent" />
     </section>
   );
@@ -44,21 +204,8 @@ function Hero() {
 
 function About() {
   return (
-    <section className="relative h-screen w-full overflow-hidden bg-neutral-100 text-neutral-900">
-
-      {/* Logo — top-left, editorial anchor */}
-      <div className="absolute left-12 top-10 z-10">
-        <div className="w-[130px]">
-          <Image
-            src="/images/Logo IQC - Black C.png"
-            alt="Iconic Quality Consultants"
-            width={360}
-            height={140}
-            className="h-auto w-full"
-            priority
-          />
-        </div>
-      </div>
+    <section data-theme="light" className="relative h-screen w-full overflow-hidden bg-neutral-100 text-neutral-900">
+ 
 
       {/* Blueprint — left, heavy & grounded */}
       <div className="absolute bottom-0 left-0">
@@ -73,7 +220,7 @@ function About() {
       </div>
 
       {/* Text — right, optically aligned */}
-      <div className="absolute right-24 top-[44%] max-w-[580px]">
+      <div className="absolute right-24 top-[30%] max-w-[580px]">
         <h2 className="mb-10 text-[42px] font-semibold tracking-tight">
           ABOUT US
         </h2>
@@ -102,7 +249,7 @@ function About() {
 
 function VisionMissionPurpose() {
   return (
-    <section className="relative h-screen w-full overflow-hidden text-white">
+    <section data-theme="dark" className="relative h-screen w-full overflow-hidden text-white">
 
       {/* ===== BACKGROUND BASE ===== */}
       <div className="absolute inset-0">
@@ -117,17 +264,7 @@ function VisionMissionPurpose() {
 
       {/* ===== DARK OVERLAY ===== */}
       <div className="absolute inset-0 z-[2] bg-black/30" />
-
-      {/* ===== LOGO ===== */}
-      <div className="absolute left-12 top-10 z-[3]">
-        <Image
-          src="/images/Logo IQC - White C.png"
-          alt="Iconic Quality Consultants"
-          width={140}
-          height={60}
-          priority
-        />
-      </div>
+ 
 
       {/* ===== CONTENT (BOTTOM BAND LOCKED) ===== */}
       <div className="absolute inset-x-0 bottom-[21%] z-[3] px-12">
@@ -179,24 +316,14 @@ function VisionMissionPurpose() {
 
 function ScopeOfServices() {
   return (
-    <section className="relative h-screen w-full overflow-hidden bg-white text-black">
+    <section data-theme="light" className="relative h-screen w-full overflow-hidden bg-white text-black">
 
       {/* ===== LEFT CONTENT ===== */}
       <div className="relative z-10 flex h-full w-full">
 
         {/* ===== LEFT PANEL ===== */}
         <div className="relative flex h-full w-[60%] flex-col px-16 pt-5">
-
-          {/* Logo */}
-          <div className="mb-16">
-            <Image
-              src="/images/Logo IQC - Black C.png"
-              alt="Iconic Quality Consultants"
-              width={160}
-              height={60}
-              priority
-            />
-          </div>
+ 
 
           {/* Title */}
           <h2 className="mb-4 text-[56px] font-bold tracking-tight">
@@ -278,7 +405,7 @@ function ScopeOfServices() {
 
 function OurProjectApproach() {
   return (
-    <section className="relative w-full overflow-hidden bg-[#f6f7f5] text-[#2f3b2f]">
+    <section data-theme="light" className="relative w-full overflow-hidden bg-[#f6f7f5] text-[#2f3b2f]">
 
       {/* ===== SUBTLE CIRCULAR GRADIENT BACKGROUND ===== */}
       <div className="pointer-events-none absolute inset-0">
@@ -410,7 +537,7 @@ function OurProjectApproach() {
 
 function WhyChooseUs() {
   return (
-    <section className="relative w-full bg-white text-[#2f3b2f]">
+    <section data-theme="light" className="relative w-full bg-white text-[#2f3b2f]">
 
       <div className="mx-auto max-w-7xl px-16 py-28">
 
@@ -746,6 +873,7 @@ function Footer() {
 export default function Page() {
   return (
      <>
+     <Header/>
      <Hero/>
      <About/>
      <VisionMissionPurpose/>

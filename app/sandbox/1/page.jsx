@@ -616,7 +616,6 @@ function WhyChooseUs() {
     </section>
   );
 }
-
  
 const CORE_VALUES = [
   {
@@ -750,13 +749,7 @@ const CORE_VALUES = [
     </section>
   );
 }
-
-/**
- * =========================================================
- * VALUE ITEM — VISUAL IDENTICAL
- * =========================================================
- */
-
+ 
 function Value({ left, top, title, text }) {
   return (
     <div
@@ -788,9 +781,144 @@ function Value({ left, top, title, text }) {
   );
 }
 
+function KataraSection() {
+  const clusters = [
+    {
+      title: "Private Residences",
+      images: {
+        tall: "/images/capsule/22025364-7853-4189-8c33-093c1c1c085b 2.JPG",
+        wide: "/images/capsule/5041364c-14f0-4b1b-ba03-fa23806b3cf8 2.JPG",
+        medium: "/images/capsule/ca1a0e38-1775-4b6f-affb-234c1217281b 2.JPG",
+      },
+    },
+    {
+      title: "Private Residences",
+      images: {
+        tall: "/images/house/4b095765-4c75-447b-8121-2b7cf16fe831.JPG",
+        wide: "/images/house/8b1b730d-2dbf-4f8d-8e06-61ea6f6506b9 2.JPG",
+        medium: "/images/house/67603a1b-259c-4a0b-8e96-7cca103fb89f 2.JPG",
+      },
+    },
+  ];
 
+  return (
+    <section className="bg-[#f5efe6] py-40 overflow-x-hidden">
+      {clusters.map((cluster, index) => {
+        const isEven = index % 2 === 0;
 
+        // ===== refs =====
+        const tallRef = useRef(null);
+        const wideRef = useRef(null);
+        const mediumRef = useRef(null);
 
+        // ===== scroll progress =====
+        const tallScroll = useScroll({
+          target: tallRef,
+          offset: ["start end", "end start"],
+        }).scrollYProgress;
+
+        const wideScroll = useScroll({
+          target: wideRef,
+          offset: ["start end", "end start"],
+        }).scrollYProgress;
+
+        const mediumScroll = useScroll({
+          target: mediumRef,
+          offset: ["start end", "end start"],
+        }).scrollYProgress;
+
+        // ===== parallax transforms (BALANCED) =====
+        const tallY = useTransform(tallScroll, [0, 1], [-44, 44]);
+        const wideY = useTransform(wideScroll, [0, 1], [-28, 28]);
+        const mediumY = useTransform(mediumScroll, [0, 1], [-20, 20]);
+
+        return (
+          <div key={index} className="mb-56">
+            <div className="w-full grid grid-cols-12 gap-x-5 gap-y-10 px-6 md:px-5 lg:px-10">
+
+              {/* EMPTY SPACE — LEFT (ODD) */}
+              {!isEven && <div className="col-span-0 md:col-span-3" />}
+
+              {/* CONTENT BLOCK */}
+              <div
+                className={`
+                  col-span-12 md:col-span-9
+                  relative
+                  grid grid-cols-12 gap-x-5 gap-y-10
+                  pt-20
+                  ${!isEven ? "[direction:rtl]" : ""}
+                `}
+              >
+                {/* TITLE */}
+                <h2 className="absolute top-0 left-0 text-2xl tracking-wide text-neutral-800">
+                  {cluster.title}
+                </h2>
+
+                {/* TALL IMAGE */}
+                <div
+                  ref={tallRef}
+                  className="col-span-5 row-span-2 relative aspect-[2/3] overflow-hidden"
+                >
+                  <motion.div
+                    style={{ y: tallY }}
+                    className="absolute inset-0 scale-[1.1]"
+                  >
+                    <Image
+                      src={cluster.images.tall}
+                      alt=""
+                      fill
+                      className="object-cover"
+                    />
+                  </motion.div>
+                </div>
+
+                {/* WIDE IMAGE */}
+                <div
+                  ref={wideRef}
+                  className="col-span-7 relative aspect-[16/10] overflow-hidden"
+                >
+                  <motion.div
+                    style={{ y: wideY }}
+                    className="absolute inset-0 scale-[1.08]"
+                  >
+                    <Image
+                      src={cluster.images.wide}
+                      alt=""
+                      fill
+                      className="object-cover"
+                    />
+                  </motion.div>
+                </div>
+
+                {/* MEDIUM IMAGE */}
+                <div
+                  ref={mediumRef}
+                  className="col-span-6 -mt-4 relative aspect-[4/3] overflow-hidden"
+                >
+                  <motion.div
+                    style={{ y: mediumY }}
+                    className="absolute inset-0 scale-[1.07]"
+                  >
+                    <Image
+                      src={cluster.images.medium}
+                      alt=""
+                      fill
+                      className="object-cover"
+                    />
+                  </motion.div>
+                </div>
+              </div>
+
+              {/* EMPTY SPACE — RIGHT (EVEN) */}
+              {isEven && <div className="col-span-0 md:col-span-3" />}
+            </div>
+          </div>
+        );
+      })}
+    </section>
+  );
+}
+ 
 function Footer() {
   return (
     <section className="relative min-h-screen w-full overflow-hidden bg-black text-white">
@@ -881,6 +1009,7 @@ export default function Page() {
      <ScopeOfServices/>
      <OurProjectApproach/>
      <WhyChooseUs/>
+     <KataraSection/>
      <Footer/>
      </>
   );

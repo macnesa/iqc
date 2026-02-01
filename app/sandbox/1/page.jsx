@@ -1,7 +1,12 @@
 "use client"
 import Image from "next/image";
 import React, { Fragment, useLayoutEffect, useRef, useContext, useState, useEffect, useMemo, useId } from "react";
-import { motion, useScroll, useTransform } from "framer-motion";
+import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
+import gsap from "gsap";
+import ScrollTrigger from "gsap/ScrollTrigger";
+import SplitText from "gsap/SplitText";
+gsap.registerPlugin(ScrollTrigger, SplitText);
+
 
 function Header() {
   const headerRef = useRef(null);
@@ -124,69 +129,87 @@ function Header() {
 
 
 function Hero() {
+  const [opened, setOpened] = useState(false);
   const sectionRef = useRef(null);
 
-  // Track scroll progress relative to this section
+  // =========================
+  // AUTO OPENING SEQUENCE
+  // =========================
+  useEffect(() => {
+    const t = setTimeout(() => {
+      setOpened(true);
+    }, 500);
+    return () => clearTimeout(t);
+  }, []);
+
+  // =========================
+  // SLICE CONFIG (LOCKED)
+  // =========================
+  const SLICE_COUNT = 10;
+  const SLICE_HEIGHT = 100 / SLICE_COUNT;
+  const SLICE_DURATION = 1.9;
+  const SLICE_STAGGER = 0.11;
+
+  const SLICE_CLEAN_TIME =
+    (SLICE_COUNT - 1) * SLICE_STAGGER + SLICE_DURATION;
+
+  // =========================
+  // SCROLL PARALLAX (LOGO)
+  // =========================
   const { scrollYProgress } = useScroll({
     target: sectionRef,
     offset: ["start start", "end start"],
   });
 
-  /**
-   * PARALLAX MAPPING
-   * --------------------------------------------------
-   * Background: slow movement (far depth)
-   * Logo: faster movement + subtle scale (near depth)
-   */
+  const logoY = useTransform(scrollYProgress, [0, 1], ["0%", "-30%"]);
+  const logoScale = useTransform(scrollYProgress, [0, 1], [1, 0.94]);
 
-  // Background moves slightly upward
-  const bgY = useTransform(scrollYProgress, [0, 1], ["0%", "18%"]);
-
-  // Logo moves more noticeably
-  const logoY = useTransform(scrollYProgress, [0, 1], ["0%", "-35%"]);
-
-  // Slight scale down to simulate depth-of-field pull
-  const logoScale = useTransform(scrollYProgress, [0, 1], [1, 0.92]);
-
-  // Optional opacity softening (very subtle)
-  const logoOpacity = useTransform(scrollYProgress, [0, 1], [1, 0.85]);
+  // =========================
+  // BG ZOOM (AFTER SLICE CLEAN)
+  // =========================
+  const bgControls = {
+    scale: opened ? 1.045 : 1,
+  };
 
   return (
     <section
       ref={sectionRef}
-      className="relative min-h-screen w-full overflow-hidden bg-black"
+      className="relative h-screen w-full overflow-hidden bg-black"
     >
-      {/* ================= BACKGROUND (FAR PLANE) ================= */}
+      {/* ================= HERO BACKGROUND ================= */}
       <motion.div
-        style={{ y: bgY }}
-        className="absolute inset-0 will-change-transform"
+        initial={{ scale: 1 }}
+        animate={bgControls}
+        transition={{
+          duration: 7,
+          delay: opened ? SLICE_CLEAN_TIME : 0,
+          ease: [0.22, 0.0, 0.2, 1],
+        }}
+        className="absolute inset-0"
       >
         <Image
           src="/images/BG - 1.jpg"
-          alt="iQC Abstract Green Background"
+          alt="Hero Background"
           fill
           priority
           className="object-cover"
         />
+        <div className="absolute inset-0 bg-black/30" />
       </motion.div>
 
-      {/* Overlay for contrast */}
-      <div className="absolute inset-0 bg-black/25" />
-
-      {/* ================= FOREGROUND CONTENT ================= */}
-      <div className="relative z-10 flex min-h-screen items-center justify-center px-6">
+      {/* ================= HERO CONTENT (LOGO PARALLAX PRESERVED) ================= */}
+      <div className="relative z-10 flex h-full items-center justify-center">
         <motion.div
           style={{
             y: logoY,
             scale: logoScale,
-            opacity: logoOpacity,
           }}
           className="will-change-transform"
         >
           <div className="w-[180px] md:w-[260px] lg:w-[320px]">
             <Image
               src="/images/Logo IQC - White A.png"
-              alt="Iconic Quality Consultants Logo"
+              alt="IQC Logo"
               width={640}
               height={240}
               priority
@@ -196,339 +219,445 @@ function Hero() {
         </motion.div>
       </div>
 
-      {/* ================= BOTTOM FADE ================= */}
-      <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-black to-transparent" />
+      {/* ================= OPENING SHUTTER ================= */}
+      <AnimatePresence>
+        {!opened && (
+          <div className="pointer-events-none absolute inset-0 z-50">
+            {Array.from({ length: SLICE_COUNT }).map((_, i) => {
+              const reverseIndex = SLICE_COUNT - i - 1;
+
+              return (
+                <motion.div
+                  key={i}
+                  initial={{ height: "100%" }}
+                  animate={{ height: "0%" }}
+                  exit={{ height: "0%" }}
+                  transition={{
+                    duration: SLICE_DURATION,
+                    delay: reverseIndex * SLICE_STAGGER,
+                    ease: [0.45, 0.0, 0.55, 1],
+                  }}
+                  className="absolute left-0 w-full bg-white"
+                  style={{
+                    top: `${i * SLICE_HEIGHT}%`,
+                    height: `${SLICE_HEIGHT}%`,
+                    transformOrigin: "top",
+                  }}
+                />
+              );
+            })}
+          </div>
+        )}
+      </AnimatePresence>
     </section>
   );
 }
 
 function About() {
-  return (
-    <section data-theme="light" className="relative h-screen w-full overflow-hidden bg-neutral-100 text-neutral-900">
- 
+  const sectionRef = useRef(null);
+  const leadRef = useRef(null);
+  const bodyRef = useRef(null);
 
-      {/* Blueprint — left, heavy & grounded */}
-      <div className="absolute bottom-0 left-0">
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      /* ================= LEAD SPLIT ================= */
+      const leadSplit = new SplitText(leadRef.current, { type: "lines" });
+
+      leadSplit.lines.forEach((line) => {
+        const wrapper = document.createElement("div");
+        wrapper.style.overflow = "hidden";
+        wrapper.style.display = "block";
+        line.parentNode.insertBefore(wrapper, line);
+        wrapper.appendChild(line);
+      });
+
+      gsap.set(leadSplit.lines, {
+        y: 32,          // ⬆️ lebih tegas
+        opacity: 0.15,  // jelas belum hadir
+      });
+
+      gsap.to(leadSplit.lines, {
+        y: 0,
+        opacity: 1,
+        duration: 1.1,
+        ease: "power3.out",
+        stagger: 0.07, // ⬅️ rhythm lebih hidup
+        scrollTrigger: {
+          trigger: sectionRef.current,
+          start: "top 52%",
+          once: true,
+        },
+      });
+
+      /* ================= BODY SPLIT ================= */
+      const bodySplit = new SplitText(bodyRef.current, { type: "lines" });
+
+      bodySplit.lines.forEach((line) => {
+        const wrapper = document.createElement("div");
+        wrapper.style.overflow = "hidden";
+        wrapper.style.display = "block";
+        line.parentNode.insertBefore(wrapper, line);
+        wrapper.appendChild(line);
+      });
+
+      gsap.set(bodySplit.lines, {
+        y: 22,
+        opacity: 0.2,
+      });
+
+      gsap.to(bodySplit.lines, {
+        y: 0,
+        opacity: 1,
+        duration: 0.95,
+        ease: "power3.out",
+        stagger: 0.055,
+        delay: 0.1,
+        scrollTrigger: {
+          trigger: sectionRef.current,
+          start: "top 50%",
+          once: true,
+        },
+      });
+    }, sectionRef);
+
+    return () => ctx.revert();
+  }, []);
+
+  return (
+    <section
+      ref={sectionRef}
+      data-theme="light"
+      className="relative flex h-screen w-full items-center justify-center overflow-hidden bg-[#F3F4F5] text-neutral-900"
+    >
+      {/* ================= BACKGROUND ================= */}
+      <div className="absolute inset-0">
         <Image
-          src="/images/image_2026-01-28_15-42-03.png"
-          alt="Architectural blueprint illustration"
-          width={2000}
-          height={1400}
-          className="h-[62vh] w-auto max-w-none"
+          src="/images/image_2026-01-28_15-42-033.png"
+          alt="Architectural blueprint background"
+          fill
           priority
+          className="object-cover opacity-[0.08]"
         />
       </div>
 
-      {/* Text — right, optically aligned */}
-      <div className="absolute right-24 top-[30%] max-w-[580px]">
-        <h2 className="mb-10 text-[42px] font-semibold tracking-tight">
-          ABOUT US
-        </h2>
+      {/* ================= CONTENT ================= */}
+      <div className="relative z-10 mx-auto max-w-[820px] px-10 text-left">
+        {/* LEAD */}
+        <p
+          ref={leadRef}
+          className="mb-14 text-[30px] leading-[1.25] tracking-tight text-neutral-900"
+        >
+          We are a Bali-based construction and quality control company built on
+          international experience and local insight. Our team has delivered
+          major projects across the GCC — a region renowned for its demanding
+          standards of quality and precision. We bring that same commitment to
+          professionalism and on-time delivery to every project in Bali.
+        </p>
 
-        <div className="space-y-7 text-[15px] leading-[1.7] text-neutral-700">
-          <p>
-            We are a Bali-based construction and quality control company built on
-            international experience and local insight. Our team has delivered
-            major projects across the GCC — a region renowned for its demanding
-            standards of quality and precision. We bring that same commitment to
-            professionalism and on-time delivery to every project in Bali.
-          </p>
-
-          <p>
-            With years on the island and a deep understanding of the Balinese
-            market, we recognize the importance of clear communication,
-            dependable supervision, and efficient execution. Our goal is simple
-            — to deliver construction that is well-managed, transparent, and
-            built to last.
-          </p>
-        </div>
+        {/* BODY */}
+        <p
+          ref={bodyRef}
+          className="max-w-[640px] text-[17px] leading-[1.7] text-neutral-700"
+        >
+          With years on the island and a deep understanding of the Balinese
+          market, we recognize the importance of clear communication, dependable
+          supervision, and efficient execution. Our goal is simple — to deliver
+          construction that is well-managed, transparent, and built to last.
+        </p>
       </div>
     </section>
   );
 }
 
 function VisionMissionPurpose() {
+  const ITEMS = [
+    {
+      title: "VISION",
+      body:
+        "To be a trusted leader in Bali’s construction industry, delivering projects with high standards, on-time performance, and lasting quality.",
+      image:
+        "https://images.unsplash.com/photo-1503387762-592deb58ef4e?auto=format&fit=crop&w=1600&q=80",
+    },
+    {
+      title: "MISSION",
+      body:
+        "To deliver quality construction through transparency, professionalism, and clear communication, ensuring every project is managed efficiently and completed on schedule.",
+      image:
+        "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=1600&q=80",
+    },
+    {
+      title: "PURPOSE",
+      body:
+        "To raise the standard of construction in Bali by building trust, accountability, and long-term value — not only in structures, but in the entire construction process.",
+      image:
+        "https://images.unsplash.com/photo-1481277542470-605612bd2d61?auto=format&fit=crop&w=1600&q=80",
+    },
+  ];
+
   return (
-    <section data-theme="dark" className="relative h-screen w-full overflow-hidden text-white">
+    <section
+      data-theme="light"
+      className="relative flex h-screen w-full items-center bg-[#F3F4F5] text-neutral-900"
+    >
+      <div className="mx-auto w-full max-w-7xl px-12">
+        <div className="grid h-[480px] grid-cols-1 md:grid-cols-3">
+          {ITEMS.map((item, index) => {
+            const isLast = index === ITEMS.length - 1;
 
-      {/* ===== BACKGROUND BASE ===== */}
-      <div className="absolute inset-0">
-        <Image
-          src="/images/BG - 2.jpg"
-          alt="iQC Green Panel Background"
-          fill
-          priority
-          className="object-cover"
-        />
-      </div>
-
-      {/* ===== DARK OVERLAY ===== */}
-      <div className="absolute inset-0 z-[2] bg-black/30" />
- 
-
-      {/* ===== CONTENT (BOTTOM BAND LOCKED) ===== */}
-      <div className="absolute inset-x-0 bottom-[21%] z-[3] px-12">
-        <div className="mx-auto grid max-w-7xl grid-cols-1 gap-20 md:grid-cols-3">
-
-          {/* ===== VISION ===== */}
-          <div>
-            <h3 className="mb-6 text-[32px] text-center font-bold tracking-[0.08em]">
-              VISION
-            </h3>
-            <p className="max-w-sm text-[13px] leading-[1.9] text-white/80">
-              To be a trusted leader in Bali’s construction industry,
-              known for delivering projects that reflect high standards,
-              on-time performance, and lasting quality.
-            </p>
-          </div>
-
-          {/* ===== MISSION ===== */}
-          <div>
-            <h3 className="mb-6 text-[32px]  text-center font-bold tracking-[0.08em]">
-              MISSION
-            </h3>
-            <p className="max-w-sm text-[13px] leading-[1.9] text-white/80">
-              We aim to deliver quality construction with transparency,
-              professionalism, and clear communication — ensuring
-              every project is managed efficiently, completed on time,
-              and exceeds expectations.
-            </p>
-          </div>
-
-          {/* ===== PURPOSE ===== */}
-          <div>
-            <h3 className="mb-6 text-[32px]  text-center font-bold tracking-[0.08em]">
-              PURPOSE
-            </h3>
-            <p className="max-w-sm text-[13px] leading-[1.9] text-white/80">
-              We exist to raise the standard of construction in Bali by delivering projects built on trust, transparency,
-              and long-term value. Our goal is not only to build
-              structures, but to build confidence in the process —
-              through reliability, accountability, and care in every detail.
-            </p>
-          </div>
-
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function ScopeOfServices() {
-  return (
-    <section data-theme="light" className="relative h-screen w-full overflow-hidden bg-white text-black">
-
-      {/* ===== LEFT CONTENT ===== */}
-      <div className="relative z-10 flex h-full w-full">
-
-        {/* ===== LEFT PANEL ===== */}
-        <div className="relative flex h-full w-[60%] flex-col px-16 pt-5">
- 
-
-          {/* Title */}
-          <h2 className="mb-4 text-[56px] font-bold tracking-tight">
-            SCOPE OF SERVICES
-          </h2>
-
-          {/* Subtitle */}
-          <p className="mb-14 max-w-xl text-[16px] text-black/70">
-            We provide complete construction and quality control solutions
-            from planning to delivery.
-          </p>
-
-          {/* ===== SERVICES TABLE ===== */}
-          <div className="max-w-2xl space-y-4 text-[14px]">
-
-            {[
-              {
-                title: "CONSULTATION & FEASIBILITY",
-                desc: "Early-stage project assessment, cost estimation, and technical advice.",
-              },
-              {
-                title: "PROJECT MANAGEMENT",
-                desc: "Coordination of timelines, resources, and contractors from start to finish.",
-              },
-              {
-                title: "CONSTRUCTION & EXECUTION",
-                desc: "Full construction services covering all structural and architectural works.",
-              },
-              {
-                title: "FIT-OUT & FINISHING WORKS",
-                desc: "Interior and exterior finishing tailored to project requirements.",
-              },
-              {
-                title: "QUALITY CONTROL & ASSURANCE",
-                desc: "Inspection, testing, and verification across all stages of construction.",
-              },
-              {
-                title: "RENOVATION & MAINTENANCE",
-                desc: "Structural or aesthetic upgrades and ongoing upkeep.",
-              },
-              {
-                title: "HEALTH, SAFETY & ENVIRONMENT (HSE)",
-                desc: "Implementation of safety and environmental compliance standards.",
-              },
-            ].map((item, i) => (
+            return (
               <div
-                key={i}
-                className="flex gap-6 border-b border-black/30 pb-3"
+                key={item.title}
+                className={`group relative overflow-hidden ${
+                  !isLast ? "border-r border-neutral-300" : ""
+                }`}
               >
-                <div className="w-[260px] font-semibold tracking-wide">
-                  {item.title}
+                {/* ===== IMAGE (HOVER ONLY) ===== */}
+                <div
+                  className="absolute inset-0 bg-cover bg-center opacity-0 transition-opacity duration-500 group-hover:opacity-100"
+                  style={{ backgroundImage: `url(${item.image})` }}
+                />
+
+                {/* ===== DARK OVERLAY ===== */}
+                <div className="absolute inset-0 bg-neutral-900 opacity-0 transition-opacity duration-500 group-hover:opacity-80" />
+
+                {/* ===== TITLE (FIXED CENTER) ===== */}
+                <div className="absolute inset-0 z-10 flex items-center justify-center">
+                  <h3 className="text-[33px] font-semibold tracking-tight  transition-colors duration-500 group-hover:text-white">
+                    {item.title}
+                  </h3>
                 </div>
-                <div className="flex-1 text-black/70 italic">
-                  {item.desc}
+
+                {/* ===== BODY (REVEAL, LEFT-ALIGNED, SAFE WIDTH) ===== */}
+                <div className="absolute inset-x-0 top-[60%] z-10 px-10">
+                  <p className="max-w-[360px] text-left text-[14px] leading-[1.8] text-white opacity-0 transition-opacity duration-500 group-hover:opacity-100">
+                    {item.body}
+                  </p>
                 </div>
               </div>
-            ))}
-          </div>
+            );
+          })}
         </div>
-
-        {/* ===== RIGHT IMAGE ===== */}
-        <div className="relative h-full w-[40%]">
-          <img
-            src="https://i.pinimg.com/1200x/5f/95/b8/5f95b81b97e707a236904c7843862f8d.jpg"
-            alt="Modern Green House"
-            fill="true"
-            className="object-cover"
-            priority="true"
-          />
-
-          {/* subtle dark edge */}
-          <div className="absolute inset-y-0 left-0 w-12 bg-gradient-to-r from-black/25 to-transparent" />
-        </div>
-
       </div>
     </section>
   );
 }
 
-function OurProjectApproach() {
-  return (
-    <section data-theme="light" className="relative w-full overflow-hidden bg-[#f6f7f5] text-[#2f3b2f]">
 
-      {/* ===== SUBTLE CIRCULAR GRADIENT BACKGROUND ===== */}
+function ScopeOfServices() {
+  const [activeIndex, setActiveIndex] = useState(null);
+
+  const SERVICES = [
+    {
+      title: "Consultation & Feasibility",
+      desc: "Early-stage project assessment, cost estimation, and technical advice.",
+      image:
+        "https://images.unsplash.com/photo-1503387762-592deb58ef4e?q=80&w=1600",
+    },
+    {
+      title: "Project Management",
+      desc: "Coordination of timelines, resources, and contractors from start to finish.",
+      image:
+        "https://images.unsplash.com/photo-1529429617124-95b109e86bb8?q=80&w=1600",
+    },
+    {
+      title: "Construction & Execution",
+      desc: "Full construction services covering all structural and architectural works.",
+      image:
+        "https://images.unsplash.com/photo-1504307651254-35680f356dfd?q=80&w=1600",
+    },
+    {
+      title: "Fit-Out & Finishing Works",
+      desc: "Interior and exterior finishing tailored to project requirements.",
+      image:
+        "https://images.unsplash.com/photo-1499951360447-b19be8fe80f5?q=80&w=1600",
+    },
+    {
+      title: "Quality Control & Assurance",
+      desc: "Inspection, testing, and verification across all stages of construction.",
+      image:
+        "https://images.unsplash.com/photo-1581092160562-40aa08e78837?q=80&w=1600",
+    },
+    {
+      title: "Renovation & Maintenance",
+      desc: "Structural or aesthetic upgrades and ongoing upkeep.",
+      image:
+        "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=1600",
+    },
+    {
+      title: "Health, Safety & Environment (HSE)",
+      desc: "Implementation of safety and environmental compliance standards.",
+      image:
+        "https://i.pinimg.com/1200x/cc/8f/aa/cc8faa35350040544fa3c0429b828087.jpg",
+    },
+  ];
+  
+
+  return (
+    <section className="relative min-h-screen bg-[#F3F4F5] text-black px-4 sm:px-[6vw] py-16 sm:py-[14vh]">
+      <ul>
+        {SERVICES.map((item, i) => {
+          const isFirst = i === 0;
+          const isLast = i === SERVICES.length - 1;
+          const isActive = activeIndex === i;
+
+          return (
+            <li
+              key={i}
+              onMouseEnter={() => setActiveIndex(i)}
+              onMouseLeave={() => setActiveIndex(null)}
+              className={`
+                relative
+                grid
+                grid-cols-[45%_55%]
+                lg:grid-cols-[40%_10%_50%]
+                gap-x-4
+                py-6 sm:py-[3.5vh]
+                border-black/15
+                ${isFirst ? "border-t" : "border-t"}
+                ${isLast ? "border-b" : ""}
+              `}
+            >
+              {/* TITLE */}
+              <div
+                className="
+                  text-[clamp(18px,4vw,30px)]
+                  font-base
+                  lg:whitespace-nowrap
+                  tracking-[-1.05]
+                "
+              >
+                {item.title}
+              </div>
+
+              {/* GAP — DESKTOP ONLY */}
+              <div className="hidden lg:block" />
+
+              {/* DESC */}
+              <div className="relative">
+                <div
+                  className="
+                    text-[14px]
+                    sm:text-[15px]
+                    leading-[1.8]
+                    opacity-60
+                    max-w-[320px]
+                  "
+                >
+                  {item.desc}
+                </div>
+
+                {/* IMAGE — DESKTOP ONLY */}
+                <div
+                  className={`
+                    pointer-events-none
+                    absolute
+                    top-1/2
+                    right-0
+                    z-2
+                    hidden lg:block
+                    w-[23vw]
+                    h-[22vh]
+                    -translate-y-1/2
+                    transition-all duration-500 ease-out
+                    ${
+                      isActive
+                        ? "opacity-100 translate-x-0"
+                        : "opacity-0 translate-x-6"
+                    }
+                  `}
+                >
+                  <img
+                    src={item.image}
+                    alt={item.title}
+                    className="h-full w-full object-cover"
+                  />
+                </div>
+              </div>
+            </li>
+          );
+        })}
+      </ul>
+    </section>
+  );
+}
+
+
+function OurProjectApproach() {
+  const STEPS = [
+    {
+      index: "01",
+      title: "Planning & Technical Review",
+      desc:
+        "Detailed project assessment and coordination to align design, schedule, and resources.",
+    },
+    {
+      index: "02",
+      title: "Materials Quality Verification",
+      desc:
+        "Careful inspection and approval of materials to meet required standards.",
+    },
+    {
+      index: "03",
+      title: "Skilled Construction Execution",
+      desc:
+        "Professional supervision and workmanship throughout every phase of construction.",
+    },
+    {
+      index: "04",
+      title: "Regular Site Inspections & Reporting",
+      desc:
+        "Ongoing monitoring and transparent communication to ensure quality and progress.",
+    },
+    {
+      index: "05",
+      title: "Final Testing, Commissioning & Handover",
+      desc:
+        "Comprehensive checks, documentation, and client handover upon completion.",
+    },
+  ];
+
+  return (
+    <section
+      data-theme="light"
+      className="relative w-full overflow-hidden bg-[#F3F4F5] text-[#2f3b2f]"
+    >
+      {/* BACKGROUND */}
       <div className="pointer-events-none absolute inset-0">
         <img
           src="/images/image_2026-01-28_20-39-35.png"
-          alt="Subtle background gradient"
+          alt=""
           className="h-full w-full object-cover opacity-[0.25]"
         />
       </div>
 
-      {/* ===== CONTENT ===== */}
-      <div className="relative z-10 mx-auto max-w-7xl px-16 py-28">
+      {/* CONTENT */}
+      <div className="relative z-10 w-full px-16 py-28">
+        <div className="flex w-full">
+          {/* LEFT EMPTY SPACE — 45% */}
+          <div className="w-[45%]" />
 
-        {/* ===== HEADER ===== */}
-        <div className="mb-28 flex items-start justify-between gap-12">
-          <h2 className="max-w-3xl text-[64px] font-bold leading-[1.05] tracking-tight">
-            OUR PROJECT APPROACH
-          </h2>
+          {/* RIGHT CONTENT — 55% */}
+          <div className="w-[55%] flex flex-col divide-y divide-[#7d8f7d]/25">
+            {STEPS.map((step) => (
+              <div
+                key={step.index}
+                className="grid grid-cols-[1.4fr_1fr] gap-16 py-20 items-start"
+              >
+                {/* INDEX + TITLE */}
+                <h3 className="text-[32px] font-base leading-[1.15] tracking-tight">
+                  <span className="mr-3 text-[14px] font-medium tracking-wide align-top">
+                    ({step.index})
+                  </span>
+                  {step.title}
+                </h3>
 
-          <p className="max-w-sm text-right text-[15px] leading-[1.7] text-[#2f3b2f]/70">
-            Our process ensures precision, accountability,
-            and consistency from start to finish.
-          </p>
-        </div>
-
-        {/* ===== PROCESS STEPS ===== */}
-        <div className="grid grid-cols-5 gap-12">
-
-          {/* STEP 1 */}
-          <div>
-            <h4 className="text-[15px] font-semibold uppercase tracking-wide">
-              Planning &<br />Technical Review
-            </h4>
-            <p className="mt-3 text-[13px] leading-[1.8] text-[#2f3b2f]/70">
-              Detailed project assessment and coordination
-              to align design, schedule, and resources.
-            </p>
-
-            <div className="mt-10 h-[280px] w-full overflow-hidden">
-              <img
-                src="https://images.unsplash.com/photo-1503387762-592deb58ef4e"
-                alt="Planning and technical review"
-                className="h-full w-full object-cover object-center"
-              />
-            </div>
+                {/* DESC — TETAP SEJAJAR */}
+                <p className="max-w-[420px] text-[15px] leading-[1.9] text-[#2f3b2f]/70">
+                  {step.desc}
+                </p>
+              </div>
+            ))}
           </div>
-
-          {/* STEP 2 */}
-          <div>
-            <h4 className="text-[15px] font-semibold uppercase tracking-wide">
-              Materials Quality<br />Verification
-            </h4>
-            <p className="mt-3 text-[13px] leading-[1.8] text-[#2f3b2f]/70">
-              Careful inspection and approval of materials
-              to meet required standards.
-            </p>
-
-            <div className="mt-10 h-[280px] w-full overflow-hidden">
-              <img
-                src="https://plus.unsplash.com/premium_photo-1674273913289-8123021e022e"
-                alt="Materials quality verification"
-                className="h-full w-full object-cover object-center"
-              />
-            </div>
-          </div>
-
-          {/* STEP 3 */}
-          <div>
-            <h4 className="text-[15px] font-semibold uppercase tracking-wide">
-              Skilled Construction<br />Execution
-            </h4>
-            <p className="mt-3 text-[13px] leading-[1.8] text-[#2f3b2f]/70">
-              Professional supervision and workmanship
-              throughout every phase of construction.
-            </p>
-
-            <div className="mt-10 h-[280px] w-full overflow-hidden">
-              <img
-                src="https://images.unsplash.com/photo-1504307651254-35680f356dfd"
-                alt="Construction execution"
-                className="h-full w-full object-cover object-center"
-              />
-            </div>
-          </div>
-
-          {/* STEP 4 */}
-          <div>
-            <h4 className="text-[15px] font-semibold uppercase tracking-wide">
-              Regular Site Inspections<br />& Reporting
-            </h4>
-            <p className="mt-3 text-[13px] leading-[1.8] text-[#2f3b2f]/70">
-              Ongoing monitoring and transparent communication
-              to ensure quality and progress.
-            </p>
-
-            <div className="mt-10 h-[280px] w-full overflow-hidden">
-              <img
-                src="https://images.unsplash.com/photo-1590650153855-d9e808231d41"
-                alt="Site inspection and reporting"
-                className="h-full w-full object-cover object-center"
-              />
-            </div>
-          </div>
-
-          {/* STEP 5 */}
-          <div>
-            <h4 className="text-[15px] font-semibold uppercase tracking-wide">
-              Final Testing,<br />Commissioning & Handover
-            </h4>
-            <p className="mt-3 text-[13px] leading-[1.8] text-[#2f3b2f]/70">
-              Comprehensive checks, documentation,
-              and client handover upon completion.
-            </p>
-
-            <div className="mt-10 h-[280px] w-full overflow-hidden">
-              <img
-                src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c"
-                alt="Final handover"
-                className="h-full w-full object-cover object-center"
-              />
-            </div>
-          </div>
-
         </div>
       </div>
     </section>
@@ -536,147 +665,196 @@ function OurProjectApproach() {
 }
 
 function WhyChooseUs() {
+  const ITEMS = [
+    {
+      title: "We Plan with Precision",
+      desc:
+        "Every project starts with clear timelines, budgets, and technical coordination.",
+      icon: (
+        <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="1.5">
+          <rect x="3" y="4" width="18" height="16" rx="2" />
+          <path d="M8 2v4M16 2v4M3 10h18" />
+        </svg>
+      ),
+    },
+    {
+      title: "We Supervise Daily",
+      desc:
+        "Consistent on-site management ensures progress and quality.",
+      icon: (
+        <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="1.5">
+          <path d="M3 11h18M5 7h14M7 15h10" />
+        </svg>
+      ),
+    },
+    {
+      title: "We Communicate Clearly",
+      desc:
+        "Updates, reporting, and client feedback are part of our process.",
+      icon: (
+        <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="1.5">
+          <path d="M21 15a4 4 0 0 1-4 4H7l-4 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4z" />
+        </svg>
+      ),
+    },
+    {
+      title: "We Deliver on Time",
+      desc:
+        "Schedules are planned realistically and tracked closely.",
+      icon: (
+        <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="1.5">
+          <circle cx="12" cy="12" r="9" />
+          <path d="M12 7v5l3 3" />
+        </svg>
+      ),
+    },
+    {
+      title: "We Control Quality",
+      desc:
+        "Materials and workmanship are inspected at every stage.",
+      icon: (
+        <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="1.5">
+          <path d="M12 3l8 4v6c0 5-3.5 7.5-8 9-4.5-1.5-8-4-8-9V7l8-4z" />
+        </svg>
+      ),
+    },
+  ];
+
   return (
-    <section data-theme="light" className="relative w-full bg-white text-[#2f3b2f]">
+    <section
+      data-theme="light"
+      className="relative w-screen bg-[#2c3627] text-white"
+    >
+      <div className="mx-auto max-w-none px-6 sm:px-10 lg:px-24 py-24">
 
-      <div className="mx-auto max-w-7xl px-16 py-28">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-y-20">
 
-        {/* ===== HEADER (TEXT CENTER ONLY) ===== */}
-        <h2 className="text-center text-[48px] font-bold tracking-tight">
-          WHY CHOOSE US
-        </h2>
+          {ITEMS.map((item, i) => (
+            <div key={i} className="relative px-6">
 
-        {/* ===== DIVIDER TOP ===== */}
-        <div className="mt-10 h-px w-full bg-[#2f3b2f]/30" />
+              {/* vertical divider (desktop only) */}
+              {i !== ITEMS.length - 1 && (
+                <div className="hidden lg:block absolute top-0 right-0 h-full w-px bg-white/20" />
+              )}
 
-        {/* ===== CONTENT GRID ===== */}
-        <div className="mt-12 grid grid-cols-5 gap-10">
+              {/* icon */}
+              <div className="mb-6 text-white/80">
+                {item.icon}
+              </div>
 
-          {/* ITEM 1 */}
-          <div>
-            <h4 className="text-[14px] font-semibold uppercase tracking-wide">
-              We Plan with Precision
-            </h4>
-            <p className="mt-3 text-[13px] leading-[1.8] text-[#2f3b2f]/75">
-              Every project starts with clear timelines,
-              budgets, and technical coordination.
-            </p>
-          </div>
+              {/* title */}
+              <h4 className="text-[15px] font-semibold mb-4">
+                {item.title}
+              </h4>
 
-          {/* ITEM 2 */}
-          <div>
-            <h4 className="text-[14px] font-semibold uppercase tracking-wide">
-              We Supervise Daily
-            </h4>
-            <p className="mt-3 text-[13px] leading-[1.8] text-[#2f3b2f]/75">
-              Consistent on-site management ensures
-              progress and quality.
-            </p>
-          </div>
+              {/* description */}
+              <p className="text-[14px] leading-[1.8] text-white/70 max-w-[40ch]">
+                {item.desc}
+              </p>
 
-          {/* ITEM 3 */}
-          <div>
-            <h4 className="text-[14px] font-semibold uppercase tracking-wide">
-              We Communicate Clearly
-            </h4>
-            <p className="mt-3 text-[13px] leading-[1.8] text-[#2f3b2f]/75">
-              Updates, reporting, and client feedback
-              are part of our process.
-            </p>
-          </div>
-
-          {/* ITEM 4 */}
-          <div>
-            <h4 className="text-[14px] font-semibold uppercase tracking-wide">
-              We Deliver on Time
-            </h4>
-            <p className="mt-3 text-[13px] leading-[1.8] text-[#2f3b2f]/75">
-              Schedules are planned realistically
-              and tracked closely.
-            </p>
-          </div>
-
-          {/* ITEM 5 */}
-          <div>
-            <h4 className="text-[14px] font-semibold uppercase tracking-wide">
-              We Control Quality
-            </h4>
-            <p className="mt-3 text-[13px] leading-[1.8] text-[#2f3b2f]/75">
-              Materials and workmanship are
-              inspected at every stage.
-            </p>
-          </div>
+            </div>
+          ))}
 
         </div>
-
-        {/* ===== DIVIDER BOTTOM ===== */}
-        <div className="mt-14 h-px w-full bg-[#2f3b2f]/30" />
 
       </div>
     </section>
   );
 }
- 
-const CORE_VALUES = [
-  {
-    id: "craftsmanship",
-    title: "CRAFTSMANSHIP",
-    text:
-      "We take pride in our work. Every structure we build reflects attention to detail, solid execution, and long-term durability.",
-    left: "7%",
-    top: "24%",
-  },
-  {
-    id: "transparency",
-    title: "TRANSPARENCY",
-    text:
-      "We believe clear communication builds trust. We keep our clients informed and involved from start to finish.",
-    left: "26%",
-    top: "36%",
-  },
-  {
-    id: "reliability",
-    title: "RELIABILITY",
-    text:
-      "We deliver on our word. Every project is managed carefully, completed on schedule, and built to the standards we promise.",
-    left: "44%",
-    top: "48%",
-  },
-  {
-    id: "accountability",
-    title: "ACCOUNTABILITY",
-    text:
-      "We stand by our commitments — to our clients, our team, and the quality of our work.",
-    left: "61%",
-    top: "60%",
-  },
-  {
-    id: "respect",
-    title: "RESPECT",
-    text:
-      "We value the people, communities, and culture that make Bali unique, and approach every project with that respect in mind.",
-    left: "78%",
-    top: "72%",
-  },
-];
 
- function CoreValues() {
+function CoreValues() {
+  const CORE_VALUES = [
+    {
+      id: "Craftsmanship",
+      title: "Craftsmanship",
+      text:
+        "We take pride in our work. Every structure we build reflects attention to detail, solid execution, and long-term durability.",
+    },
+    {
+      id: "Transparency",
+      title: "Transparency",
+      text:
+        "We believe clear communication builds trust. We keep our clients informed and involved from start to finish.",
+    },
+    {
+      id: "Reliability",
+      title: "Reliability",
+      text:
+        "We deliver on our word. Every project is managed carefully, completed on schedule, and built to the standards we promise.",
+    },
+    {
+      id: "Accountability",
+      title: "Accountability",
+      text:
+        "We stand by our commitments — to our clients, our team, and the quality of our work.",
+    },
+    {
+      id: "Respect",
+      title: "Respect",
+      text:
+        "We value the people, communities, and culture that make Bali unique, and approach every project with that respect in mind.",
+    },
+  ];
+
+  const sectionRef = useRef(null);
+  const itemsRef = useRef([]);
+  const [activeIndex, setActiveIndex] = useState(0);
+
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      const BASE_OFFSET = 140;
+      const REVEAL_RANGE = 200;
+      const HOLD_ZONE = 140;
+
+      itemsRef.current.forEach((el, i) => {
+        gsap.fromTo(
+          el,
+          {
+            opacity: 0,
+            x: 36,
+            filter: "blur(16px)",
+          },
+          {
+            opacity: 1,
+            x: 0,
+            filter: "blur(0px)",
+            ease: "none",
+            scrollTrigger: {
+              trigger: sectionRef.current,
+              start: `top+=${i * BASE_OFFSET} bottom-=20%`,
+              end: `top+=${i * BASE_OFFSET + REVEAL_RANGE} bottom-=20%`,
+              scrub: true,
+              invalidateOnRefresh: true,
+            },
+          }
+        );
+
+        ScrollTrigger.create({
+          trigger: sectionRef.current,
+          start: `top+=${i * BASE_OFFSET + HOLD_ZONE} bottom-=20%`,
+          end: `top+=${i * BASE_OFFSET + HOLD_ZONE + BASE_OFFSET} bottom-=20%`,
+          onEnter: () => setActiveIndex(i),
+          onEnterBack: () => setActiveIndex(i),
+          invalidateOnRefresh: true,
+        });
+      });
+    }, sectionRef);
+
+    return () => ctx.revert();
+  }, []);
+
   return (
     <section
-      className="relative w-full overflow-hidden text-white"
+      ref={sectionRef}
+      className="relative w-full overflow-hidden text-white py-24"
       style={{
-        height: "100vh",            // ⛔ tetap h-screen behavior
-        paddingBottom: "220px",     // ✅ buffer aman untuk house image
+        paddingBottom: "260px", // buffer aman untuk house image
       }}
     >
-      {/* =====================================================
-          BACKGROUND BASE
-      ====================================================== */}
-      <div className="absolute inset-0 z-0 bg-[#2c3627]" />
+      {/* BACKGROUND */}
+      <div className="absolute inset-0 bg-[#2c3627]" />
 
-      {/* =====================================================
-          TEXTURE (PASTI DI BAWAH SEMUA KONTEN)
-      ====================================================== */}
+      {/* TEXTURE */}
       <div className="absolute inset-0 z-[5] opacity-10 pointer-events-none">
         <Image
           src="/images/image_2026-01-28_20-39-35.png"
@@ -687,45 +865,34 @@ const CORE_VALUES = [
         />
       </div>
 
-      {/* =====================================================
-          LOGO — VISUAL LOCK
-      ====================================================== */}
-      <div className="absolute left-12 top-10 z-30 text-[11px] tracking-[0.28em] uppercase text-white/80">
-        ICONIC QUALITY CONSULTANTS
+      {/* CONTENT */}
+      <div className="relative z-30 grid grid-cols-12 px-24">
+        {/* LEFT — DESCRIPTION */}
+        <div className="col-span-5 flex items-start">
+          <p className="max-w-xl text-[22px] tracking-tight leading-[1.2] text-white/90 transition-opacity duration-300">
+            {CORE_VALUES[activeIndex].text}
+          </p>
+        </div>
+
+        {/* RIGHT — TITLES */}
+        <div className="col-span-7 flex items-start justify-end">
+          <div className="space-y-3 text-right">
+            {CORE_VALUES.map((item, i) => (
+              <div
+                key={item.id}
+                ref={(el) => (itemsRef.current[i] = el)}
+                className={`text-[56px] font-base tracking-tight transition-colors duration-300 ${
+                  i === activeIndex ? "text-white" : "text-white/35"
+                }`}
+              >
+                {item.title}
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
 
-      {/* =====================================================
-          RIGHT TITLE — VISUAL LOCK
-      ====================================================== */}
-      <div className="absolute right-20 top-[34%] z-30 max-w-md">
-        <h2 className="text-[56px] font-bold leading-tight tracking-tight">
-          CORE VALUES
-        </h2>
-        <p className="mt-6 text-[15px] leading-[1.8] text-white/80">
-          Our work is guided by values shaped through years of experience abroad
-          and a deep understanding of Bali. These principles define how we build,
-          how we communicate, and how we deliver every project.
-        </p>
-      </div>
-
-      {/* =====================================================
-          VALUES — VIEWPORT-RELATIVE COORDINATES
-      ====================================================== */}
-      <div className="absolute inset-0 z-30">
-        {CORE_VALUES.map((item) => (
-          <Value
-            key={item.id}
-            left={item.left}
-            top={item.top}
-            title={item.title}
-            text={item.text}
-          />
-        ))}
-      </div>
-
-      {/* =====================================================
-          HOUSE IMAGE — DECOR (STRICTLY BELOW CONTENT)
-      ====================================================== */}
+      {/* HOUSE IMAGE — DECOR */}
       <div className="pointer-events-none absolute inset-x-0 bottom-0 z-20">
         <Image
           src="/images/image_2026-01-28_20-39-12.png"
@@ -737,14 +904,9 @@ const CORE_VALUES = [
         />
       </div>
 
-      {/* =====================================================
-          MOBILE GUARD (DESKTOP ONLY SECTION)
-      ====================================================== */}
+      {/* MOBILE BLOCK */}
       <div className="fixed inset-0 z-[999] hidden items-center justify-center bg-[#2c3627] text-center text-sm text-white md:hidden">
-        <p className="max-w-xs leading-relaxed text-white/70">
-          This section is optimized for larger screens to preserve visual
-          clarity and composition.
-        </p>
+        Desktop only section.
       </div>
     </section>
   );
@@ -802,7 +964,7 @@ function KataraSection() {
   ];
 
   return (
-    <section className="bg-[#f5efe6] py-40 overflow-x-hidden">
+    <section className="bg-[#F3F4F5] py-40 overflow-x-hidden">
       {clusters.map((cluster, index) => {
         const isEven = index % 2 === 0;
 
@@ -845,7 +1007,7 @@ function KataraSection() {
                   col-span-12 md:col-span-9
                   relative
                   grid grid-cols-12 gap-x-5 gap-y-10
-                  pt-20
+                  pt-14
                   ${!isEven ? "[direction:rtl]" : ""}
                 `}
               >
@@ -1006,8 +1168,8 @@ export default function Page() {
      <About/>
      <VisionMissionPurpose/>
      <CoreValues/>
-     <ScopeOfServices/>
      <OurProjectApproach/>
+     <ScopeOfServices/>
      <WhyChooseUs/>
      <KataraSection/>
      <Footer/>

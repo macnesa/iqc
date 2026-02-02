@@ -272,16 +272,16 @@ function About() {
       });
 
       gsap.set(leadSplit.lines, {
-        y: 32,          // ⬆️ lebih tegas
-        opacity: 0.15,  // jelas belum hadir
+        y: 32,
+        opacity: 0.15,
       });
 
       gsap.to(leadSplit.lines, {
         y: 0,
         opacity: 1,
-        duration: 1.1,
+        duration: 1.05,
         ease: "power3.out",
-        stagger: 0.07, // ⬅️ rhythm lebih hidup
+        stagger: 0.065,
         scrollTrigger: {
           trigger: sectionRef.current,
           start: "top 52%",
@@ -301,17 +301,17 @@ function About() {
       });
 
       gsap.set(bodySplit.lines, {
-        y: 22,
+        y: 20,
         opacity: 0.2,
       });
 
       gsap.to(bodySplit.lines, {
         y: 0,
         opacity: 1,
-        duration: 0.95,
+        duration: 0.9,
         ease: "power3.out",
-        stagger: 0.055,
-        delay: 0.1,
+        stagger: 0.05,
+        delay: 0.08,
         scrollTrigger: {
           trigger: sectionRef.current,
           start: "top 50%",
@@ -345,7 +345,13 @@ function About() {
         {/* LEAD */}
         <p
           ref={leadRef}
-          className="mb-14 text-[30px] leading-[1.25] tracking-tight text-neutral-900"
+          className="
+            mb-14
+            text-[clamp(20px,2.2vw,28px)]
+            leading-[1.3]
+            tracking-[-0.005em]
+            text-neutral-900
+          "
         >
           We are a Bali-based construction and quality control company built on
           international experience and local insight. Our team has delivered
@@ -357,7 +363,12 @@ function About() {
         {/* BODY */}
         <p
           ref={bodyRef}
-          className="max-w-[640px] text-[17px] leading-[1.7] text-neutral-700"
+          className="
+            max-w-[640px]
+            text-[clamp(14.5px,1.05vw,16px)]
+            leading-[1.75]
+            text-neutral-700
+          "
         >
           With years on the island and a deep understanding of the Balinese
           market, we recognize the importance of clear communication, dependable
@@ -369,73 +380,129 @@ function About() {
   );
 }
 
+
 function VisionMissionPurpose() {
+  const sectionRef = useRef(null);
+  const imageRefs = useRef([]);
+
   const ITEMS = [
     {
-      title: "VISION",
+      title: "Vision",
       body:
         "To be a trusted leader in Bali’s construction industry, delivering projects with high standards, on-time performance, and lasting quality.",
       image:
-        "https://images.unsplash.com/photo-1503387762-592deb58ef4e?auto=format&fit=crop&w=1600&q=80",
+        "https://i.pinimg.com/1200x/6b/de/06/6bde060e5c6ac48fe399a9d795ba3a07.jpg",
     },
     {
-      title: "MISSION",
+      title: "Mission",
       body:
         "To deliver quality construction through transparency, professionalism, and clear communication, ensuring every project is managed efficiently and completed on schedule.",
       image:
-        "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=1600&q=80",
+        "https://i.pinimg.com/1200x/1d/cb/b4/1dcbb4f7b926a21b08b130980328390f.jpg",
     },
     {
-      title: "PURPOSE",
+      title: "Purpose",
       body:
         "To raise the standard of construction in Bali by building trust, accountability, and long-term value — not only in structures, but in the entire construction process.",
       image:
-        "https://images.unsplash.com/photo-1481277542470-605612bd2d61?auto=format&fit=crop&w=1600&q=80",
+        "https://i.pinimg.com/1200x/a8/0b/0d/a80b0df3a68f32ac3951b757145df6ac.jpg",
     },
   ];
 
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      imageRefs.current.forEach((img) => {
+        // initial subtle zoom
+        gsap.set(img, { scale: 1.06 });
+
+        gsap.to(img, {
+          scale: 1,
+          duration: 1.6,
+          ease: "sine.out", // <<<<< THIS IS THE FIX
+          scrollTrigger: {
+            trigger: img.parentElement,
+            start: "top 75%",
+            once: true,
+          },
+        });
+      });
+    }, sectionRef);
+
+    return () => ctx.revert();
+  }, []);
+
   return (
     <section
-      data-theme="light"
-      className="relative flex h-screen w-full items-center bg-[#F3F4F5] text-neutral-900"
+      ref={sectionRef}
+      className="relative flex h-screen w-full items-center bg-[#F3F4F5]"
     >
       <div className="mx-auto w-full max-w-7xl px-12">
         <div className="grid h-[480px] grid-cols-1 md:grid-cols-3">
-          {ITEMS.map((item, index) => {
-            const isLast = index === ITEMS.length - 1;
-
-            return (
+          {ITEMS.map((item, i) => (
+            <div
+              key={item.title}
+              className="group relative overflow-hidden bg-neutral-200"
+            >
+              {/* IMAGE */}
               <div
-                key={item.title}
-                className={`group relative overflow-hidden ${
-                  !isLast ? "border-r border-neutral-300" : ""
-                }`}
+                ref={(el) => (imageRefs.current[i] = el)}
+                className="
+                  absolute inset-0
+                  bg-cover bg-center
+                  will-change-transform
+                  transition-transform duration-500
+                  group-hover:scale-[1.03]
+                "
+                style={{ backgroundImage: `url(${item.image})` }}
+              />
+
+              {/* OVERLAY */}
+              <div className="absolute inset-0 bg-neutral-900/0 transition-colors duration-500 group-hover:bg-neutral-900/80" />
+
+              {/* TITLE */}
+              <div className="absolute bottom-8 left-0 z-20 border-l-4 border-white px-8">
+                <h3
+                  className="
+                    uppercase
+                    font-semibold
+                    text-white
+                    text-[clamp(20px,1.9vw,26px)]
+                    leading-[1.1]
+                    tracking-[0.08em]
+                  "
+                >
+                  {item.title}
+                </h3>
+              </div>
+
+              {/* BODY PANEL */}
+              <div
+                className="
+                  absolute bottom-0 left-0 right-0 z-10
+                  translate-y-[72px]
+                  transition-transform duration-500 ease-out
+                  group-hover:-translate-y-[60px]
+                "
               >
-                {/* ===== IMAGE (HOVER ONLY) ===== */}
-                <div
-                  className="absolute inset-0 bg-cover bg-center opacity-0 transition-opacity duration-500 group-hover:opacity-100"
-                  style={{ backgroundImage: `url(${item.image})` }}
-                />
-
-                {/* ===== DARK OVERLAY ===== */}
-                <div className="absolute inset-0 bg-neutral-900 opacity-0 transition-opacity duration-500 group-hover:opacity-80" />
-
-                {/* ===== TITLE (FIXED CENTER) ===== */}
-                <div className="absolute inset-0 z-10 flex items-center justify-center">
-                  <h3 className="text-[33px] font-semibold tracking-tight  transition-colors duration-500 group-hover:text-white">
-                    {item.title}
-                  </h3>
-                </div>
-
-                {/* ===== BODY (REVEAL, LEFT-ALIGNED, SAFE WIDTH) ===== */}
-                <div className="absolute inset-x-0 top-[60%] z-10 px-10">
-                  <p className="max-w-[360px] text-left text-[14px] leading-[1.8] text-white opacity-0 transition-opacity duration-500 group-hover:opacity-100">
+                <div className="px-8 pb-8 pt-24">
+                  <p
+                    className="
+                      max-w-[360px]
+                      text-white
+                      opacity-0
+                      transition-opacity duration-300 delay-200
+                      group-hover:opacity-100
+                      text-[clamp(13.5px,1vw,15px)]
+                      leading-[1.75]
+                    "
+                  >
                     {item.body}
                   </p>
                 </div>
               </div>
-            );
-          })}
+
+            </div>
+          ))}
         </div>
       </div>
     </section>
@@ -443,8 +510,15 @@ function VisionMissionPurpose() {
 }
 
 
+
+
+
 function ScopeOfServices() {
   const [activeIndex, setActiveIndex] = useState(null);
+
+  const sectionRef = useRef(null);
+  const headerRef = useRef(null);
+  const itemsRef = useRef([]);
 
   const SERVICES = [
     {
@@ -490,99 +564,197 @@ function ScopeOfServices() {
         "https://i.pinimg.com/1200x/cc/8f/aa/cc8faa35350040544fa3c0429b828087.jpg",
     },
   ];
-  
+
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      /* ===== HEADER ===== */
+      const split = new SplitText(headerRef.current, { type: "lines" });
+
+      split.lines.forEach((line) => {
+        const wrapper = document.createElement("div");
+        wrapper.style.overflow = "hidden";
+        wrapper.style.display = "block";
+        line.parentNode.insertBefore(wrapper, line);
+        wrapper.appendChild(line);
+      });
+
+      gsap.set(split.lines, {
+        y: 22,
+        opacity: 0,
+      });
+
+      gsap.to(split.lines, {
+        y: 0,
+        opacity: 1,
+        duration: 0.9,
+        ease: "power3.out",
+        stagger: 0.05,
+        scrollTrigger: {
+          trigger: sectionRef.current,
+          start: "top 60%",
+          once: true,
+        },
+      });
+
+      /* ===== SERVICE ROWS ===== */
+      gsap.set(itemsRef.current, {
+        y: 20,
+        opacity: 0,
+      });
+
+      gsap.to(itemsRef.current, {
+        y: 0,
+        opacity: 1,
+        duration: 0.9,
+        ease: "power2.out",
+        stagger: 0.06,
+        scrollTrigger: {
+          trigger: sectionRef.current,
+          start: "top 55%",
+          once: true,
+        },
+      });
+    }, sectionRef);
+
+    return () => ctx.revert();
+  }, []);
 
   return (
-    <section className="relative min-h-screen bg-[#F3F4F5] text-black px-4 sm:px-[6vw] py-16 sm:py-[14vh]">
-      <ul>
-        {SERVICES.map((item, i) => {
-          const isFirst = i === 0;
-          const isLast = i === SERVICES.length - 1;
-          const isActive = activeIndex === i;
+    <section
+      ref={sectionRef}
+      className="relative w-full overflow-hidden bg-[#F3F4F5] text-black"
+    >
+      {/* ===== MIRRORED BACKGROUND ===== */}
+      <div className="pointer-events-none absolute inset-0">
+        <img
+          src="/images/image_2026-01-28_20-39-35.png"
+          alt=""
+          className="
+            h-full w-full object-cover
+            opacity-[0.25]
+            scale-x-[-1]
+          "
+        />
+      </div>
 
-          return (
-            <li
-              key={i}
-              onMouseEnter={() => setActiveIndex(i)}
-              onMouseLeave={() => setActiveIndex(null)}
-              className={`
-                relative
-                grid
-                grid-cols-[45%_55%]
-                lg:grid-cols-[40%_10%_50%]
-                gap-x-4
-                py-6 sm:py-[3.5vh]
-                border-black/15
-                ${isFirst ? "border-t" : "border-t"}
-                ${isLast ? "border-b" : ""}
-              `}
-            >
-              {/* TITLE */}
-              <div
-                className="
-                  text-[clamp(18px,4vw,30px)]
-                  font-base
-                  lg:whitespace-nowrap
-                  tracking-[-1.05]
-                "
+      {/* ===== CONTENT ===== */}
+      <div className="relative z-10 min-h-screen px-4 sm:px-[6vw] py-16 sm:py-[14vh]">
+        {/* LABEL + HEADER */}
+        <div className="mb-28 max-w-full">
+          <span className="mb-4 block text-[11px] uppercase tracking-[0.25em] text-black/50">
+            Scope of services
+          </span>
+
+          <h2
+            ref={headerRef}
+            className="
+              font-normal
+              text-[clamp(20px,1.9vw,24px)]
+              leading-[1.45]
+              tracking-tight
+              max-w-[920px]
+            "
+          >
+            Our services cover every stage of the construction process, from early
+            consultation and planning to execution, quality control, and long-term
+            maintenance, ensuring projects are managed with clarity, consistency,
+            and accountability.
+          </h2>
+        </div>
+
+        {/* SERVICES LIST */}
+        <ul>
+          {SERVICES.map((item, i) => {
+            const isLast = i === SERVICES.length - 1;
+            const isActive = activeIndex === i;
+
+            return (
+              <li
+                key={i}
+                ref={(el) => (itemsRef.current[i] = el)}
+                onMouseEnter={() => setActiveIndex(i)}
+                onMouseLeave={() => setActiveIndex(null)}
+                className={`
+                  relative
+                  grid
+                  grid-cols-[45%_55%]
+                  lg:grid-cols-[40%_10%_50%]
+                  gap-x-4
+                  py-8 sm:py-[3.8vh]
+                  border-t border-black/15
+                  ${isLast ? "border-b" : ""}
+                `}
               >
-                {item.title}
-              </div>
-
-              {/* GAP — DESKTOP ONLY */}
-              <div className="hidden lg:block" />
-
-              {/* DESC */}
-              <div className="relative">
+                {/* TITLE */}
                 <div
                   className="
-                    text-[14px]
-                    sm:text-[15px]
-                    leading-[1.8]
-                    opacity-60
-                    max-w-[320px]
+                    font-base
+                    text-[clamp(26px,3.6vw,40px)]
+                    leading-[1.15]
+                    tracking-[-0.02em]
+                    lg:whitespace-nowrap
                   "
                 >
-                  {item.desc}
+                  {item.title}
                 </div>
 
-                {/* IMAGE — DESKTOP ONLY */}
-                <div
-                  className={`
-                    pointer-events-none
-                    absolute
-                    top-1/2
-                    right-0
-                    z-2
-                    hidden lg:block
-                    w-[23vw]
-                    h-[22vh]
-                    -translate-y-1/2
-                    transition-all duration-500 ease-out
-                    ${
-                      isActive
-                        ? "opacity-100 translate-x-0"
-                        : "opacity-0 translate-x-6"
-                    }
-                  `}
-                >
-                  <img
-                    src={item.image}
-                    alt={item.title}
-                    className="h-full w-full object-cover"
-                  />
+                <div className="hidden lg:block" />
+
+                {/* DESC + IMAGE */}
+                <div className="relative">
+                  <div
+                    className="
+                      max-w-[340px]
+                      text-[clamp(15px,1.25vw,17px)]
+                      leading-[1.85]
+                      text-black/60
+                    "
+                  >
+                    {item.desc}
+                  </div>
+
+                  <div
+                    className={`
+                      pointer-events-none
+                      absolute
+                      top-1/2
+                      right-0
+                      hidden lg:block
+                      w-[18vw]
+                      h-[39vh]
+                      -translate-y-1/2
+                      transition-all duration-500 ease-out
+                      ${
+                        isActive
+                          ? "opacity-100 translate-x-0"
+                          : "opacity-0 translate-x-6"
+                      }
+                    `}
+                  >
+                    <img
+                      src={item.image}
+                      alt={item.title}
+                      className="h-full w-full object-cover"
+                    />
+                  </div>
                 </div>
-              </div>
-            </li>
-          );
-        })}
-      </ul>
+              </li>
+            );
+          })}
+        </ul>
+      </div>
     </section>
   );
 }
 
 
+
+
 function OurProjectApproach() {
+  const sectionRef = useRef(null);
+  const headerRef = useRef(null);
+  const stepsRef = useRef([]);
+
   const STEPS = [
     {
       index: "01",
@@ -616,8 +788,63 @@ function OurProjectApproach() {
     },
   ];
 
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      /* ===== HEADER (ONLY SPLIT HERE) ===== */
+      const split = new SplitText(headerRef.current, { type: "lines" });
+
+      split.lines.forEach((line) => {
+        const wrapper = document.createElement("div");
+        wrapper.style.overflow = "hidden";
+        wrapper.style.display = "block";
+        line.parentNode.insertBefore(wrapper, line);
+        wrapper.appendChild(line);
+      });
+
+      gsap.set(split.lines, {
+        y: 24,
+        opacity: 0,
+      });
+
+      gsap.to(split.lines, {
+        y: 0,
+        opacity: 1,
+        duration: 0.9,
+        ease: "power3.out",
+        stagger: 0.05,
+        scrollTrigger: {
+          trigger: sectionRef.current,
+          start: "top 55%",
+          once: true,
+        },
+      });
+
+      /* ===== STEPS (BLOCK ANIMATION ONLY) ===== */
+      gsap.set(stepsRef.current, {
+        y: 24,
+        opacity: 0,
+      });
+
+      gsap.to(stepsRef.current, {
+        y: 0,
+        opacity: 1,
+        duration: 0.9,
+        ease: "power2.out",
+        stagger: 0.08,
+        scrollTrigger: {
+          trigger: sectionRef.current,
+          start: "top 55%",
+          once: true,
+        },
+      });
+    }, sectionRef);
+
+    return () => ctx.revert();
+  }, []);
+
   return (
     <section
+      ref={sectionRef}
       data-theme="light"
       className="relative w-full overflow-hidden bg-[#F3F4F5] text-[#2f3b2f]"
     >
@@ -632,31 +859,78 @@ function OurProjectApproach() {
 
       {/* CONTENT */}
       <div className="relative z-10 w-full px-16 py-28">
+        {/* SMALL LABEL */}
+        <div className="absolute left-16 top-28">
+          <span className="text-[11px] uppercase tracking-[0.25em] text-[#2f3b2f]/60">
+            Our approach
+          </span>
+        </div>
+
         <div className="flex w-full">
-          {/* LEFT EMPTY SPACE — 45% */}
           <div className="w-[45%]" />
 
-          {/* RIGHT CONTENT — 55% */}
-          <div className="w-[55%] flex flex-col divide-y divide-[#7d8f7d]/25">
-            {STEPS.map((step) => (
-              <div
-                key={step.index}
-                className="grid grid-cols-[1.4fr_1fr] gap-16 py-20 items-start"
+          <div className="w-[55%] flex flex-col">
+            {/* HEADER */}
+            <div className="mb-24 max-w-[520px]">
+              <h2
+                ref={headerRef}
+                className="
+                  font-normal
+                  text-[clamp(18px,1.7vw,22px)]
+                  leading-[1.45]
+                  tracking-tight
+                "
               >
-                {/* INDEX + TITLE */}
-                <h3 className="text-[32px] font-base leading-[1.15] tracking-tight">
-                  <span className="mr-3 text-[14px] font-medium tracking-wide align-top">
-                    ({step.index})
-                  </span>
-                  {step.title}
-                </h3>
+                Our approach follows a structured and methodical process from early
+                planning and technical review through to final handover, ensuring
+                every project is executed with clarity, control, and consistent
+                quality.
+              </h2>
+            </div>
 
-                {/* DESC — TETAP SEJAJAR */}
-                <p className="max-w-[420px] text-[15px] leading-[1.9] text-[#2f3b2f]/70">
-                  {step.desc}
-                </p>
-              </div>
-            ))}
+            {/* STEPS */}
+            <div className="flex flex-col divide-y divide-[#7d8f7d]/25">
+              {STEPS.map((step, i) => (
+                <div
+                  key={step.index}
+                  ref={(el) => (stepsRef.current[i] = el)}
+                  className="grid grid-cols-[1.4fr_1fr] gap-16 py-20 items-start"
+                >
+                  <h3
+                    className="
+                      font-base
+                      text-[clamp(34px,4.2vw,48px)]
+                      leading-[1.1]
+                      tracking-[-0.015em]
+                    "
+                  >
+                    <span
+                      className="
+                        mr-3
+                        align-top
+                        text-[clamp(14px,1.1vw,16px)]
+                        font-medium
+                        tracking-wide
+                      "
+                    >
+                      ({step.index})
+                    </span>
+                    {step.title}
+                  </h3>
+
+                  <p
+                    className="
+                      max-w-[420px]
+                      text-[clamp(15px,1.25vw,17px)]
+                      leading-[1.85]
+                      text-[#2f3b2f]/70
+                    "
+                  >
+                    {step.desc}
+                  </p>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>
@@ -664,7 +938,13 @@ function OurProjectApproach() {
   );
 }
 
+
+
 function WhyChooseUs() {
+  const sectionRef = useRef(null);
+  const headerRef = useRef(null);
+  const itemsRef = useRef([]);
+
   const ITEMS = [
     {
       title: "We Plan with Precision",
@@ -720,47 +1000,140 @@ function WhyChooseUs() {
     },
   ];
 
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      /* ===== HEADER ===== */
+      gsap.set(headerRef.current, {
+        y: 20,
+        opacity: 0,
+      });
+
+      gsap.to(headerRef.current, {
+        y: 0,
+        opacity: 1,
+        duration: 0.8,
+        ease: "power2.out",
+        scrollTrigger: {
+          trigger: sectionRef.current,
+          start: "top 60%",
+          once: true,
+        },
+      });
+
+      /* ===== ITEMS ===== */
+      gsap.set(itemsRef.current, {
+        y: 24,
+        opacity: 0,
+      });
+
+      gsap.to(itemsRef.current, {
+        y: 0,
+        opacity: 1,
+        duration: 0.9,
+        ease: "power2.out",
+        stagger: 0.08,
+        scrollTrigger: {
+          trigger: sectionRef.current,
+          start: "top 55%",
+          once: true,
+        },
+      });
+    }, sectionRef);
+
+    return () => ctx.revert();
+  }, []);
+
   return (
     <section
-      data-theme="light"
-      className="relative w-screen bg-[#2c3627] text-white"
+      ref={sectionRef}
+      data-theme="dark"
+      className="relative w-screen overflow-hidden bg-[#2c3627] text-white"
     >
-      <div className="mx-auto max-w-none px-6 sm:px-10 lg:px-24 py-24">
+      {/* ===== SAME BACKGROUND TEXTURE ===== */}
+      <div className="pointer-events-none absolute inset-0">
+        <img
+          src="/images/image_2026-01-28_20-39-35.png"
+          alt=""
+          className="
+            h-full w-full object-cover
+            opacity-[0.78]
+          "
+        />
+        {/* dark wash to keep contrast */}
+        <div className="absolute inset-0 bg-[#2c3627]/90" />
+      </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-y-20">
+      {/* ===== CONTENT ===== */}
+      <div className="relative z-10 mx-auto max-w-none px-6 sm:px-10 lg:px-24 py-24">
+        {/* HEADER */}
+        <div
+          ref={headerRef}
+          className="mb-28 max-w-[680px]"
+        >
+          <h2
+            className="
+              font-normal
+              text-[clamp(22px,2.2vw,28px)]
+              leading-[1.45]
+              tracking-tight
+            "
+          >
+            Why Choose Us
+          </h2>
+        </div>
 
+        {/* ITEMS */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-y-24">
           {ITEMS.map((item, i) => (
-            <div key={i} className="relative px-6">
-
-              {/* vertical divider (desktop only) */}
+            <div
+              key={i}
+              ref={(el) => (itemsRef.current[i] = el)}
+              className="relative px-6"
+            >
+              {/* divider */}
               {i !== ITEMS.length - 1 && (
                 <div className="hidden lg:block absolute top-0 right-0 h-full w-px bg-white/20" />
               )}
 
               {/* icon */}
-              <div className="mb-6 text-white/80">
+              <div className="mb-8 text-white/80">
                 {item.icon}
               </div>
 
               {/* title */}
-              <h4 className="text-[15px] font-semibold mb-4">
+              <h4
+                className="
+                  mb-5
+                  font-semibold
+                  text-[clamp(16px,1.2vw,18px)]
+                  leading-[1.3]
+                  tracking-tight
+                "
+              >
                 {item.title}
               </h4>
 
-              {/* description */}
-              <p className="text-[14px] leading-[1.8] text-white/70 max-w-[40ch]">
+              {/* desc */}
+              <p
+                className="
+                  max-w-[42ch]
+                  text-[clamp(14px,1.05vw,15.5px)]
+                  leading-[1.85]
+                  text-white/70
+                "
+              >
                 {item.desc}
               </p>
-
             </div>
           ))}
-
         </div>
-
       </div>
     </section>
   );
 }
+
+
+
 
 function CoreValues() {
   const CORE_VALUES = [
@@ -847,9 +1220,7 @@ function CoreValues() {
     <section
       ref={sectionRef}
       className="relative w-full overflow-hidden text-white py-24"
-      style={{
-        paddingBottom: "260px", // buffer aman untuk house image
-      }}
+      style={{ paddingBottom: "260px" }}
     >
       {/* BACKGROUND */}
       <div className="absolute inset-0 bg-[#2c3627]" />
@@ -865,10 +1236,17 @@ function CoreValues() {
         />
       </div>
 
+      {/* SECTION LABEL */}
+      <div className="absolute left-24 top-16 z-30">
+        <span className="text-[12px] uppercase tracking-[0.3em] text-white/60">
+          Core values
+        </span>
+      </div>
+
       {/* CONTENT */}
       <div className="relative z-30 grid grid-cols-12 px-24">
         {/* LEFT — DESCRIPTION */}
-        <div className="col-span-5 flex items-start">
+        <div className="col-span-5 flex items-start mt-5">
           <p className="max-w-xl text-[22px] tracking-tight leading-[1.2] text-white/90 transition-opacity duration-300">
             {CORE_VALUES[activeIndex].text}
           </p>
@@ -911,6 +1289,7 @@ function CoreValues() {
     </section>
   );
 }
+
  
 function Value({ left, top, title, text }) {
   return (
@@ -944,9 +1323,14 @@ function Value({ left, top, title, text }) {
 }
 
 function KataraSection() {
+  const containerRef = useRef(null);
+
   const clusters = [
     {
       title: "Private Residences",
+      location: "Doha, Qatar",
+      description:
+        "High-end private residential projects delivered under strict quality control and international construction standards.",
       images: {
         tall: "/images/capsule/22025364-7853-4189-8c33-093c1c1c085b 2.JPG",
         wide: "/images/capsule/5041364c-14f0-4b1b-ba03-fa23806b3cf8 2.JPG",
@@ -955,6 +1339,9 @@ function KataraSection() {
     },
     {
       title: "Private Residences",
+      location: "Dubai, UAE",
+      description:
+        "Luxury residential villas developed for expatriate clients, emphasizing durability, material precision, and disciplined execution.",
       images: {
         tall: "/images/house/4b095765-4c75-447b-8121-2b7cf16fe831.JPG",
         wide: "/images/house/8b1b730d-2dbf-4f8d-8e06-61ea6f6506b9 2.JPG",
@@ -963,64 +1350,63 @@ function KataraSection() {
     },
   ];
 
+  /* ===== GLOBAL SCROLL SOURCE ===== */
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start end", "end start"],
+  });
+
   return (
-    <section className="bg-[#F3F4F5] py-40 overflow-x-hidden">
+    <section
+      ref={containerRef}
+      className="bg-[#F3F4F5] py-40 overflow-x-hidden"
+    >
       {clusters.map((cluster, index) => {
         const isEven = index % 2 === 0;
 
-        // ===== refs =====
-        const tallRef = useRef(null);
-        const wideRef = useRef(null);
-        const mediumRef = useRef(null);
+        /* ===== simulated per-cluster scroll slice ===== */
+        const start = index * 0.25;
+        const end = start + 0.5;
 
-        // ===== scroll progress =====
-        const tallScroll = useScroll({
-          target: tallRef,
-          offset: ["start end", "end start"],
-        }).scrollYProgress;
-
-        const wideScroll = useScroll({
-          target: wideRef,
-          offset: ["start end", "end start"],
-        }).scrollYProgress;
-
-        const mediumScroll = useScroll({
-          target: mediumRef,
-          offset: ["start end", "end start"],
-        }).scrollYProgress;
-
-        // ===== parallax transforms (BALANCED) =====
-        const tallY = useTransform(tallScroll, [0, 1], [-44, 44]);
-        const wideY = useTransform(wideScroll, [0, 1], [-28, 28]);
-        const mediumY = useTransform(mediumScroll, [0, 1], [-20, 20]);
+        const tallY = useTransform(scrollYProgress, [start, end], [-44, 44]);
+        const wideY = useTransform(scrollYProgress, [start, end], [-28, 28]);
+        const mediumY = useTransform(scrollYProgress, [start, end], [-20, 20]);
 
         return (
           <div key={index} className="mb-56">
-            <div className="w-full grid grid-cols-12 gap-x-5 gap-y-10 px-6 md:px-5 lg:px-10">
+            <div className="grid grid-cols-12 gap-x-8 px-6 md:px-10">
 
-              {/* EMPTY SPACE — LEFT (ODD) */}
-              {!isEven && <div className="col-span-0 md:col-span-3" />}
+              {/* SIDE CAPTION */}
+              <div
+                className={`
+                  col-span-12 md:col-span-3
+                  flex items-center
+                  ${isEven ? "order-1" : "order-2"}
+                `}
+              >
+                <div className="max-w-xs">
+                  <h2 className="text-2xl tracking-wide text-neutral-800">
+                    {cluster.title}
+                  </h2>
+                  <p className="mt-1 text-xs uppercase tracking-[0.2em] text-neutral-500">
+                    {cluster.location}
+                  </p>
+                  <p className="mt-4 text-sm leading-relaxed text-neutral-600">
+                    {cluster.description}
+                  </p>
+                </div>
+              </div>
 
-              {/* CONTENT BLOCK */}
+              {/* IMAGE GRID */}
               <div
                 className={`
                   col-span-12 md:col-span-9
-                  relative
                   grid grid-cols-12 gap-x-5 gap-y-10
-                  pt-14
-                  ${!isEven ? "[direction:rtl]" : ""}
+                  ${isEven ? "order-2" : "order-1"}
                 `}
               >
-                {/* TITLE */}
-                <h2 className="absolute top-0 left-0 text-2xl tracking-wide text-neutral-800">
-                  {cluster.title}
-                </h2>
-
-                {/* TALL IMAGE */}
-                <div
-                  ref={tallRef}
-                  className="col-span-5 row-span-2 relative aspect-[2/3] overflow-hidden"
-                >
+                {/* TALL */}
+                <div className="col-span-5 row-span-2 relative aspect-[2/3] overflow-hidden">
                   <motion.div
                     style={{ y: tallY }}
                     className="absolute inset-0 scale-[1.1]"
@@ -1034,11 +1420,8 @@ function KataraSection() {
                   </motion.div>
                 </div>
 
-                {/* WIDE IMAGE */}
-                <div
-                  ref={wideRef}
-                  className="col-span-7 relative aspect-[16/10] overflow-hidden"
-                >
+                {/* WIDE */}
+                <div className="col-span-7 relative aspect-[16/10] overflow-hidden">
                   <motion.div
                     style={{ y: wideY }}
                     className="absolute inset-0 scale-[1.08]"
@@ -1052,11 +1435,8 @@ function KataraSection() {
                   </motion.div>
                 </div>
 
-                {/* MEDIUM IMAGE */}
-                <div
-                  ref={mediumRef}
-                  className="col-span-6 -mt-4 relative aspect-[4/3] overflow-hidden"
-                >
+                {/* MEDIUM — WITH HOVER OVERLAY */}
+                <div className="col-span-6 -mt-4 relative aspect-[4/3] overflow-hidden group cursor-pointer">
                   <motion.div
                     style={{ y: mediumY }}
                     className="absolute inset-0 scale-[1.07]"
@@ -1068,11 +1448,18 @@ function KataraSection() {
                       className="object-cover"
                     />
                   </motion.div>
+
+                  {/* OVERLAY */}
+                  <div className="pointer-events-none absolute inset-0 bg-black/0 transition-colors duration-300 group-hover:bg-black/30" />
+
+                  {/* TEXT */}
+                  <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+                    <span className="opacity-0 translate-y-2 transition-all duration-300 group-hover:opacity-100 group-hover:translate-y-0 text-xs uppercase tracking-[0.25em] text-white">
+                      View Project
+                    </span>
+                  </div>
                 </div>
               </div>
-
-              {/* EMPTY SPACE — RIGHT (EVEN) */}
-              {isEven && <div className="col-span-0 md:col-span-3" />}
             </div>
           </div>
         );
@@ -1080,6 +1467,8 @@ function KataraSection() {
     </section>
   );
 }
+
+
  
 function Footer() {
   return (

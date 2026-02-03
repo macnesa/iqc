@@ -208,7 +208,7 @@ function Hero() {
           }}
           className="will-change-transform"
         >
-          <div className="w-[180px] md:w-[260px] lg:w-[320px]">
+          <div className="w-[200px] md:w-[260px] lg:w-[320px]">
             <Image
               src="/images/Logo IQC - White A.png"
               alt="IQC Logo"
@@ -668,10 +668,10 @@ function ScopeOfServices() {
             ref={headerRef}
             className="
               font-normal
-              text-[clamp(20px,1.9vw,24px)]
+              text-[clamp(20px,1.9vw,23px)]
               leading-[1.45]
               tracking-tight
-              max-w-[920px]
+              max-w-[620px]
             "
           >
             Our services cover every stage of the construction process, from early
@@ -712,6 +712,7 @@ function ScopeOfServices() {
                     leading-[1.15]
                     tracking-[-0.02em]
                     lg:whitespace-nowrap
+                    font-[Canela]
                   "
                 >
                   {item.title}
@@ -725,7 +726,7 @@ function ScopeOfServices() {
                     className="
                       max-w-[340px]
                       text-[clamp(15px,1.25vw,17px)]
-                      leading-[1.85]
+                      leading-[1.55]
                       text-black/60
                     "
                   >
@@ -894,10 +895,19 @@ function OurProjectApproach() {
                   tracking-tight
                 "
               >
-                Our approach follows a structured and methodical process from early
-                planning and technical review through to final handover, ensuring
-                every project is executed with clarity, control, and consistent
-                quality.
+                Our approach follows a{" "}
+                <span className="font-[Canela] font-medium">
+                  structured and methodical process
+                </span>{" "}
+                from early planning and technical review through to{" "}
+                <span className="font-[Canela] font-medium">
+                  final handover
+                </span>
+                , ensuring every project is executed with clarity, control, and{" "}
+                <span className="font-[Canela] font-medium">
+                  consistent quality
+                </span>
+                .
               </h2>
             </div>
 
@@ -936,12 +946,13 @@ function OurProjectApproach() {
                       font-base
                       pr-10
                       md:pr-0
-                      text-[clamp(22px,5vw,34px)]
+                      text-[clamp(22px,5vw,32px)]
                       leading-[1.2]
                       tracking-[-0.015em]
+                      font-[Canela]
                     "
                   >
-                    <span className="hidden md:inline mr-3 align-top text-[clamp(14px,1.1vw,16px)] font-medium tracking-wide">
+                    <span className="hidden  md:inline mr-3 align-top text-[clamp(14px,1.1vw,16px)] font-medium tracking-wide">
                       ({step.index})
                     </span>
                     {step.title}
@@ -955,7 +966,7 @@ function OurProjectApproach() {
                       max-w-[420px]
                       text-[clamp(15px,4vw,17px)]
                       md:text-[clamp(15px,1.25vw,17px)]
-                      leading-[1.8]
+                      leading-[1.5]
                       text-[#2f3b2f]/70
                     "
                   >
@@ -1127,7 +1138,8 @@ function WhyChooseUs() {
                   font-semibold
                   text-[clamp(16px,1.2vw,18px)]
                   leading-[1.3]
-                  tracking-tight uppercase
+                  tracking-wide 
+                  font-[Canela]
                 "
               >
                 {item.title}
@@ -1297,7 +1309,7 @@ function CoreValues() {
                 key={item.id}
                 ref={(el) => (itemsRef.current[i] = el)}
                 className={`
-                  text-[40px] tracking-tight transition-colors duration-300
+                  text-[40px] font-[Canela] tracking-tight transition-colors duration-300
                   ${i === activeIndex ? "text-white" : "text-white/35"}
                 `}
               >
@@ -1315,7 +1327,7 @@ function CoreValues() {
                 key={item.id}
                 ref={(el) => (itemsRef.current[i] = el)}
                 className={`
-                  text-[56px] tracking-tight transition-colors duration-300
+                  text-[56px]  font-[Canela] tracking-tight transition-colors duration-300
                   ${i === activeIndex ? "text-white" : "text-white/35"}
                 `}
               >
@@ -1453,7 +1465,7 @@ function KataraSection() {
                       ${!isEven ? "mt-6 md:mt-0" : ""}
                     `}
                   >
-                    <h2 className="text-[clamp(20px,5vw,24px)] leading-[1.3] tracking-wide text-neutral-800">
+                    <h2 className="text-[clamp(20px,5vw,24px)] font-[Canela] leading-[1.3] tracking-wide text-neutral-800">
                       {cluster.title}
                     </h2>
 
@@ -1532,7 +1544,7 @@ function KataraSection() {
  
 function Footer() {
   return (
-    <section className="relative min-h-[30vh] w-full overflow-hidden bg-black text-white">
+    <section className="relative min-h-[55vh] w-full overflow-hidden bg-black text-white">
       {/* Background */}
       <div className="absolute inset-0">
         <Image
@@ -1548,7 +1560,7 @@ function Footer() {
       <div className="absolute inset-0 bg-black/30" />
 
       {/* Content */}
-      <div className="relative z-10 flex min-h-[30vh] flex-col justify-between px-6 py-8 md:px-12 lg:px-20">
+      <div className="relative z-10 flex min-h-[55vh] flex-col justify-between px-6 py-8 md:px-12 lg:px-20">
         
         {/* Top tagline */}
         <div className="text-center">

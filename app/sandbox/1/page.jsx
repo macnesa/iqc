@@ -6,6 +6,8 @@ import gsap from "gsap";
 import ScrollTrigger from "gsap/ScrollTrigger";
 import SplitText from "gsap/SplitText";
 gsap.registerPlugin(ScrollTrigger, SplitText);
+import Lightbox from "yet-another-react-lightbox";
+import "yet-another-react-lightbox/styles.css";
 
 
 function Header() {
@@ -412,13 +414,12 @@ function VisionMissionPurpose() {
   useEffect(() => {
     const ctx = gsap.context(() => {
       imageRefs.current.forEach((img) => {
-        // initial subtle zoom
         gsap.set(img, { scale: 1.06 });
 
         gsap.to(img, {
           scale: 1,
           duration: 1.6,
-          ease: "sine.out", // <<<<< THIS IS THE FIX
+          ease: "sine.out",
           scrollTrigger: {
             trigger: img.parentElement,
             start: "top 75%",
@@ -432,16 +433,13 @@ function VisionMissionPurpose() {
   }, []);
 
   return (
-    <section
-      ref={sectionRef}
-      className="relative flex h-screen w-full items-center bg-[#F3F4F5]"
-    >
-      <div className="mx-auto w-full max-w-7xl px-12">
-        <div className="grid h-[480px] grid-cols-1 md:grid-cols-3">
+    <section ref={sectionRef} className="relative w-full bg-[#F3F4F5] py-20">
+      <div className="mx-auto w-full max-w-7xl px-6 md:px-12">
+        <div className="grid grid-cols-1 md:grid-cols-3 md:h-[480px]">
           {ITEMS.map((item, i) => (
             <div
               key={item.title}
-              className="group relative overflow-hidden bg-neutral-200"
+              className="group relative overflow-hidden bg-neutral-200 h-[420px] md:h-auto"
             >
               {/* IMAGE */}
               <div
@@ -449,56 +447,73 @@ function VisionMissionPurpose() {
                 className="
                   absolute inset-0
                   bg-cover bg-center
-                  will-change-transform
                   transition-transform duration-500
-                  group-hover:scale-[1.03]
+                  md:group-hover:scale-[1.03]
                 "
                 style={{ backgroundImage: `url(${item.image})` }}
               />
 
               {/* OVERLAY */}
-              <div className="absolute inset-0 bg-neutral-900/0 transition-colors duration-500 group-hover:bg-neutral-900/80" />
-
-              {/* TITLE */}
-              <div className="absolute bottom-8 left-0 z-20 border-l-4 border-white px-8">
-                <h3
-                  className="
-                    uppercase
-                    font-semibold
-                    text-white
-                    text-[clamp(20px,1.9vw,26px)]
-                    leading-[1.1]
-                    tracking-[0.08em]
-                  "
-                >
-                  {item.title}
-                </h3>
-              </div>
-
-              {/* BODY PANEL */}
               <div
                 className="
-                  absolute bottom-0 left-0 right-0 z-10
-                  translate-y-[72px]
-                  transition-transform duration-500 ease-out
-                  group-hover:-translate-y-[60px]
+                  absolute inset-0
+                  bg-neutral-900/70
+                  transition-colors duration-500
+                  md:bg-neutral-900/0
+                  md:group-hover:bg-neutral-900/80
                 "
-              >
-                <div className="px-8 pb-8 pt-24">
-                  <p
+              />
+
+              {/* ================= DESKTOP TEXT (ASLI, JANGAN DISENTUH) ================= */}
+              <div className="hidden md:block">
+                {/* TITLE */}
+                <div className="absolute bottom-8 left-0 z-20 border-l-4 border-white px-8">
+                  <h3
                     className="
-                      max-w-[360px]
-                      text-white
-                      opacity-0
-                      transition-opacity duration-300 delay-200
-                      group-hover:opacity-100
-                      text-[clamp(13.5px,1vw,15px)]
-                      leading-[1.75]
+                      uppercase font-semibold text-white
+                      text-[clamp(20px,1.9vw,30px)]
+                      tracking-[0.08em]
                     "
                   >
-                    {item.body}
-                  </p>
+                    {item.title}
+                  </h3>
                 </div>
+
+                {/* BODY PANEL */}
+                <div
+                  className="
+                    absolute bottom-0 left-0 right-0 z-10
+                    translate-y-[72px]
+                    transition-transform duration-500 ease-out
+                    group-hover:-translate-y-[60px]
+                  "
+                >
+                  <div className="px-8 pb-8 pt-24">
+                    <p
+                      className="
+                        max-w-[360px]
+                        text-white
+                        opacity-0
+                        transition-opacity duration-300 delay-200
+                        group-hover:opacity-100
+                        text-[clamp(13.5px,1vw,15px)]
+                        leading-[1.45]
+                      "
+                    >
+                      {item.body}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* ================= MOBILE TEXT (FLOW AMAN) ================= */}
+              <div className="md:hidden absolute bottom-0 left-0 right-0 z-20 px-8 pb-8">
+                <h3 className="mb-3 uppercase font-semibold text-white tracking-[0.08em]">
+                  {item.title}
+                </h3>
+                <p className="max-w-[360px] text-white text-sm leading-[1.45]">
+                  {item.body}
+                </p>
               </div>
 
             </div>
@@ -509,9 +524,7 @@ function VisionMissionPurpose() {
   );
 }
 
-
-
-
+ 
 
 function ScopeOfServices() {
   const [activeIndex, setActiveIndex] = useState(null);
@@ -567,7 +580,6 @@ function ScopeOfServices() {
 
   useEffect(() => {
     const ctx = gsap.context(() => {
-      /* ===== HEADER ===== */
       const split = new SplitText(headerRef.current, { type: "lines" });
 
       split.lines.forEach((line) => {
@@ -578,10 +590,7 @@ function ScopeOfServices() {
         wrapper.appendChild(line);
       });
 
-      gsap.set(split.lines, {
-        y: 22,
-        opacity: 0,
-      });
+      gsap.set(split.lines, { y: 22, opacity: 0 });
 
       gsap.to(split.lines, {
         y: 0,
@@ -596,11 +605,7 @@ function ScopeOfServices() {
         },
       });
 
-      /* ===== SERVICE ROWS ===== */
-      gsap.set(itemsRef.current, {
-        y: 20,
-        opacity: 0,
-      });
+      gsap.set(itemsRef.current, { y: 20, opacity: 0 });
 
       gsap.to(itemsRef.current, {
         y: 0,
@@ -624,23 +629,19 @@ function ScopeOfServices() {
       ref={sectionRef}
       className="relative w-full overflow-hidden bg-[#F3F4F5] text-black"
     >
-      {/* ===== MIRRORED BACKGROUND ===== */}
+      {/* MIRRORED BACKGROUND */}
       <div className="pointer-events-none absolute inset-0">
         <img
           src="/images/image_2026-01-28_20-39-35.png"
           alt=""
-          className="
-            h-full w-full object-cover
-            opacity-[0.25]
-            scale-x-[-1]
-          "
+          className="h-full w-full object-cover opacity-[0.25] scale-x-[-1]"
         />
       </div>
 
-      {/* ===== CONTENT ===== */}
-      <div className="relative z-10 min-h-screen px-4 sm:px-[6vw] py-16 sm:py-[14vh]">
+      {/* CONTENT */}
+      <div className="relative z-10 min-h-screen px-6 sm:px-[6vw] py-20 sm:py-[14vh]">
         {/* LABEL + HEADER */}
-        <div className="mb-28 max-w-full">
+        <div className="mb-32 sm:mb-28 max-w-full">
           <span className="mb-4 block text-[11px] uppercase tracking-[0.25em] text-black/50">
             Scope of services
           </span>
@@ -680,7 +681,7 @@ function ScopeOfServices() {
                   grid-cols-[45%_55%]
                   lg:grid-cols-[40%_10%_50%]
                   gap-x-4
-                  py-8 sm:py-[3.8vh]
+                  py-10 sm:py-[3.8vh]
                   border-t border-black/15
                   ${isLast ? "border-b" : ""}
                 `}
@@ -790,7 +791,6 @@ function OurProjectApproach() {
 
   useEffect(() => {
     const ctx = gsap.context(() => {
-      /* ===== HEADER (ONLY SPLIT HERE) ===== */
       const split = new SplitText(headerRef.current, { type: "lines" });
 
       split.lines.forEach((line) => {
@@ -801,10 +801,7 @@ function OurProjectApproach() {
         wrapper.appendChild(line);
       });
 
-      gsap.set(split.lines, {
-        y: 24,
-        opacity: 0,
-      });
+      gsap.set(split.lines, { y: 24, opacity: 0 });
 
       gsap.to(split.lines, {
         y: 0,
@@ -819,11 +816,7 @@ function OurProjectApproach() {
         },
       });
 
-      /* ===== STEPS (BLOCK ANIMATION ONLY) ===== */
-      gsap.set(stepsRef.current, {
-        y: 24,
-        opacity: 0,
-      });
+      gsap.set(stepsRef.current, { y: 24, opacity: 0 });
 
       gsap.to(stepsRef.current, {
         y: 0,
@@ -858,20 +851,22 @@ function OurProjectApproach() {
       </div>
 
       {/* CONTENT */}
-      <div className="relative z-10 w-full px-16 py-28">
-        {/* SMALL LABEL */}
-        <div className="absolute left-16 top-28">
+      <div className="relative z-10 w-full px-6 md:px-16 py-20 md:py-28">
+        {/* LABEL */}
+        <div className="mb-10 md:absolute md:left-16 md:top-28 md:mb-0">
           <span className="text-[11px] uppercase tracking-[0.25em] text-[#2f3b2f]/60">
             Our approach
           </span>
         </div>
 
-        <div className="flex w-full">
-          <div className="w-[45%]" />
+        <div className="flex w-full flex-col md:flex-row">
+          {/* LEFT SPACE (DESKTOP ONLY) */}
+          <div className="hidden md:block md:w-[45%]" />
 
-          <div className="w-[55%] flex flex-col">
+          {/* RIGHT */}
+          <div className="w-full md:w-[55%] flex flex-col">
             {/* HEADER */}
-            <div className="mb-24 max-w-[520px]">
+            <div className="mb-16 md:mb-24 max-w-[520px]">
               <h2
                 ref={headerRef}
                 className="
@@ -894,35 +889,55 @@ function OurProjectApproach() {
                 <div
                   key={step.index}
                   ref={(el) => (stepsRef.current[i] = el)}
-                  className="grid grid-cols-[1.4fr_1fr] gap-16 py-20 items-start"
+                  className="
+                    relative
+                    py-10
+                    md:py-20
+                    md:grid md:grid-cols-[1.4fr_1fr]
+                    md:gap-16
+                  "
                 >
+                  {/* MOBILE NUMBER (RIGHT) */}
+                  <span
+                    className="
+                      absolute
+                      right-0
+                      top-10
+                      text-sm
+                      tracking-wide
+                      opacity-70
+                      md:hidden
+                    "
+                  >
+                    ({step.index})
+                  </span>
+
+                  {/* TITLE */}
                   <h3
                     className="
                       font-base
-                      text-[clamp(34px,4.2vw,48px)]
-                      leading-[1.1]
+                      pr-10
+                      md:pr-0
+                      text-[clamp(22px,6vw,48px)]
+                      leading-[1.2]
                       tracking-[-0.015em]
                     "
                   >
-                    <span
-                      className="
-                        mr-3
-                        align-top
-                        text-[clamp(14px,1.1vw,16px)]
-                        font-medium
-                        tracking-wide
-                      "
-                    >
+                    <span className="hidden md:inline mr-3 align-top text-[clamp(14px,1.1vw,16px)] font-medium tracking-wide">
                       ({step.index})
                     </span>
                     {step.title}
                   </h3>
 
+                  {/* DESC */}
                   <p
                     className="
+                      mt-4
+                      md:mt-0
                       max-w-[420px]
-                      text-[clamp(15px,1.25vw,17px)]
-                      leading-[1.85]
+                      text-[clamp(15px,4vw,17px)]
+                      md:text-[clamp(15px,1.25vw,17px)]
+                      leading-[1.8]
                       text-[#2f3b2f]/70
                     "
                   >
@@ -959,8 +974,7 @@ function WhyChooseUs() {
     },
     {
       title: "We Supervise Daily",
-      desc:
-        "Consistent on-site management ensures progress and quality.",
+      desc: "Consistent on-site management ensures progress and quality.",
       icon: (
         <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="1.5">
           <path d="M3 11h18M5 7h14M7 15h10" />
@@ -969,8 +983,7 @@ function WhyChooseUs() {
     },
     {
       title: "We Communicate Clearly",
-      desc:
-        "Updates, reporting, and client feedback are part of our process.",
+      desc: "Updates, reporting, and client feedback are part of our process.",
       icon: (
         <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="1.5">
           <path d="M21 15a4 4 0 0 1-4 4H7l-4 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4z" />
@@ -979,8 +992,7 @@ function WhyChooseUs() {
     },
     {
       title: "We Deliver on Time",
-      desc:
-        "Schedules are planned realistically and tracked closely.",
+      desc: "Schedules are planned realistically and tracked closely.",
       icon: (
         <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="1.5">
           <circle cx="12" cy="12" r="9" />
@@ -990,8 +1002,7 @@ function WhyChooseUs() {
     },
     {
       title: "We Control Quality",
-      desc:
-        "Materials and workmanship are inspected at every stage.",
+      desc: "Materials and workmanship are inspected at every stage.",
       icon: (
         <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="1.5">
           <path d="M12 3l8 4v6c0 5-3.5 7.5-8 9-4.5-1.5-8-4-8-9V7l8-4z" />
@@ -1002,11 +1013,8 @@ function WhyChooseUs() {
 
   useEffect(() => {
     const ctx = gsap.context(() => {
-      /* ===== HEADER ===== */
-      gsap.set(headerRef.current, {
-        y: 20,
-        opacity: 0,
-      });
+      gsap.set(headerRef.current, { y: 20, opacity: 0 });
+      gsap.set(itemsRef.current, { y: 24, opacity: 0 });
 
       gsap.to(headerRef.current, {
         y: 0,
@@ -1018,12 +1026,6 @@ function WhyChooseUs() {
           start: "top 60%",
           once: true,
         },
-      });
-
-      /* ===== ITEMS ===== */
-      gsap.set(itemsRef.current, {
-        y: 24,
-        opacity: 0,
       });
 
       gsap.to(itemsRef.current, {
@@ -1047,29 +1049,22 @@ function WhyChooseUs() {
     <section
       ref={sectionRef}
       data-theme="dark"
-      className="relative w-screen overflow-hidden bg-[#2c3627] text-white"
+      className="relative w-full overflow-hidden bg-[#2c3627] text-white"
     >
-      {/* ===== SAME BACKGROUND TEXTURE ===== */}
+      {/* BACKGROUND */}
       <div className="pointer-events-none absolute inset-0">
         <img
           src="/images/image_2026-01-28_20-39-35.png"
           alt=""
-          className="
-            h-full w-full object-cover
-            opacity-[0.78]
-          "
+          className="h-full w-full object-cover opacity-[0.78]"
         />
-        {/* dark wash to keep contrast */}
         <div className="absolute inset-0 bg-[#2c3627]/90" />
       </div>
 
-      {/* ===== CONTENT ===== */}
-      <div className="relative z-10 mx-auto max-w-none px-6 sm:px-10 lg:px-24 py-24">
+      {/* CONTENT */}
+      <div className="relative z-10 mx-auto px-6 sm:px-10 lg:px-24 py-24">
         {/* HEADER */}
-        <div
-          ref={headerRef}
-          className="mb-28 max-w-[680px]"
-        >
+        <div ref={headerRef} className="mb-28 max-w-[680px]">
           <h2
             className="
               font-normal
@@ -1083,18 +1078,30 @@ function WhyChooseUs() {
         </div>
 
         {/* ITEMS */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-y-24">
+        <div
+          className="
+            grid
+            grid-cols-1
+            sm:grid-cols-2
+            lg:grid-cols-5
+          "
+        >
           {ITEMS.map((item, i) => (
             <div
               key={i}
               ref={(el) => (itemsRef.current[i] = el)}
-              className="relative px-6"
+              className="
+                relative
+                px-6
+                lg:px-8
+                py-14
+                border-t
+                border-white/20
+                lg:border-t-0
+                lg:border-l
+                last:lg:border-r
+              "
             >
-              {/* divider */}
-              {i !== ITEMS.length - 1 && (
-                <div className="hidden lg:block absolute top-0 right-0 h-full w-px bg-white/20" />
-              )}
-
               {/* icon */}
               <div className="mb-8 text-white/80">
                 {item.icon}
@@ -1107,7 +1114,7 @@ function WhyChooseUs() {
                   font-semibold
                   text-[clamp(16px,1.2vw,18px)]
                   leading-[1.3]
-                  tracking-tight
+                  tracking-tight uppercase
                 "
               >
                 {item.title}
@@ -1174,46 +1181,58 @@ function CoreValues() {
   const [activeIndex, setActiveIndex] = useState(0);
 
   useEffect(() => {
-    const ctx = gsap.context(() => {
-      const BASE_OFFSET = 140;
-      const REVEAL_RANGE = 200;
-      const HOLD_ZONE = 140;
+    const mm = gsap.matchMedia();
 
-      itemsRef.current.forEach((el, i) => {
-        gsap.fromTo(
-          el,
-          {
-            opacity: 0,
-            x: 36,
-            filter: "blur(16px)",
-          },
-          {
-            opacity: 1,
-            x: 0,
-            filter: "blur(0px)",
-            ease: "none",
-            scrollTrigger: {
-              trigger: sectionRef.current,
-              start: `top+=${i * BASE_OFFSET} bottom-=20%`,
-              end: `top+=${i * BASE_OFFSET + REVEAL_RANGE} bottom-=20%`,
-              scrub: true,
-              invalidateOnRefresh: true,
+    mm.add(
+      {
+        isDesktop: "(min-width: 768px)",
+        isMobile: "(max-width: 767px)",
+      },
+      (context) => {
+        const { isDesktop, isMobile } = context.conditions;
+
+        const BASE_OFFSET = isMobile ? 110 : 140;
+        const REVEAL_RANGE = isMobile ? 160 : 200;
+        const HOLD_ZONE = isMobile ? 110 : 140;
+
+        itemsRef.current.forEach((el, i) => {
+          if (!el) return;
+
+          gsap.fromTo(
+            el,
+            {
+              opacity: 0,
+              x: isDesktop ? 36 : 0,
+              filter: isDesktop ? "blur(16px)" : "blur(0px)",
             },
-          }
-        );
+            {
+              opacity: 1,
+              x: 0,
+              filter: "blur(0px)",
+              ease: "none",
+              scrollTrigger: {
+                trigger: sectionRef.current,
+                start: `top+=${i * BASE_OFFSET} bottom-=20%`,
+                end: `top+=${i * BASE_OFFSET + REVEAL_RANGE} bottom-=20%`,
+                scrub: true,
+                invalidateOnRefresh: true,
+              },
+            }
+          );
 
-        ScrollTrigger.create({
-          trigger: sectionRef.current,
-          start: `top+=${i * BASE_OFFSET + HOLD_ZONE} bottom-=20%`,
-          end: `top+=${i * BASE_OFFSET + HOLD_ZONE + BASE_OFFSET} bottom-=20%`,
-          onEnter: () => setActiveIndex(i),
-          onEnterBack: () => setActiveIndex(i),
-          invalidateOnRefresh: true,
+          ScrollTrigger.create({
+            trigger: sectionRef.current,
+            start: `top+=${i * BASE_OFFSET + HOLD_ZONE} bottom-=20%`,
+            end: `top+=${i * BASE_OFFSET + HOLD_ZONE + BASE_OFFSET} bottom-=20%`,
+            onEnter: () => setActiveIndex(i),
+            onEnterBack: () => setActiveIndex(i),
+            invalidateOnRefresh: true,
+          });
         });
-      });
-    }, sectionRef);
+      }
+    );
 
-    return () => ctx.revert();
+    return () => mm.revert();
   }, []);
 
   return (
@@ -1237,31 +1256,48 @@ function CoreValues() {
       </div>
 
       {/* SECTION LABEL */}
-      <div className="absolute left-24 top-16 z-30">
-        <span className="text-[12px] uppercase tracking-[0.3em] text-white/60">
+      <div className="absolute left-6 md:left-24 top-12 md:top-16 z-30">
+        <span className="text-[11px] md:text-[12px] uppercase tracking-[0.3em] text-white/60">
           Core values
         </span>
       </div>
 
       {/* CONTENT */}
-      <div className="relative z-30 grid grid-cols-12 px-24">
+      <div className="relative z-30 grid grid-cols-12 px-6 md:px-24 gap-x-6">
         {/* LEFT — DESCRIPTION */}
-        <div className="col-span-5 flex items-start mt-5">
-          <p className="max-w-xl text-[22px] tracking-tight leading-[1.2] text-white/90 transition-opacity duration-300">
+        <div className="col-span-12 md:col-span-5 flex flex-col md:mt-5">
+          <p className="max-w-xl text-[16px] md:text-[22px] tracking-tight leading-[1.4] md:leading-[1.2] text-white/90">
             {CORE_VALUES[activeIndex].text}
           </p>
+
+          {/* MOBILE — TITLES UNDER DESC */}
+          <div className="mt-8 space-y-2 md:hidden">
+            {CORE_VALUES.map((item, i) => (
+              <div
+                key={item.id}
+                ref={(el) => (itemsRef.current[i] = el)}
+                className={`
+                  text-[40px] tracking-tight transition-colors duration-300
+                  ${i === activeIndex ? "text-white" : "text-white/35"}
+                `}
+              >
+                {item.title}
+              </div>
+            ))}
+          </div>
         </div>
 
-        {/* RIGHT — TITLES */}
-        <div className="col-span-7 flex items-start justify-end">
+        {/* DESKTOP — TITLES RIGHT */}
+        <div className="hidden md:flex col-span-7 items-start justify-end">
           <div className="space-y-3 text-right">
             {CORE_VALUES.map((item, i) => (
               <div
                 key={item.id}
                 ref={(el) => (itemsRef.current[i] = el)}
-                className={`text-[56px] font-base tracking-tight transition-colors duration-300 ${
-                  i === activeIndex ? "text-white" : "text-white/35"
-                }`}
+                className={`
+                  text-[56px] tracking-tight transition-colors duration-300
+                  ${i === activeIndex ? "text-white" : "text-white/35"}
+                `}
               >
                 {item.title}
               </div>
@@ -1270,7 +1306,7 @@ function CoreValues() {
         </div>
       </div>
 
-      {/* HOUSE IMAGE — DECOR */}
+      {/* HOUSE IMAGE */}
       <div className="pointer-events-none absolute inset-x-0 bottom-0 z-20">
         <Image
           src="/images/image_2026-01-28_20-39-12.png"
@@ -1280,11 +1316,6 @@ function CoreValues() {
           priority
           className="w-full object-contain"
         />
-      </div>
-
-      {/* MOBILE BLOCK */}
-      <div className="fixed inset-0 z-[999] hidden items-center justify-center bg-[#2c3627] text-center text-sm text-white md:hidden">
-        Desktop only section.
       </div>
     </section>
   );
@@ -1325,6 +1356,9 @@ function Value({ left, top, title, text }) {
 function KataraSection() {
   const containerRef = useRef(null);
 
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [lightboxImages, setLightboxImages] = useState([]);
+
   const clusters = [
     {
       title: "Private Residences",
@@ -1350,121 +1384,127 @@ function KataraSection() {
     },
   ];
 
-  /* ===== GLOBAL SCROLL SOURCE ===== */
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ["start end", "end start"],
   });
 
   return (
-    <section
-      ref={containerRef}
-      className="bg-[#F3F4F5] py-40 overflow-x-hidden"
-    >
-      {clusters.map((cluster, index) => {
-        const isEven = index % 2 === 0;
+    <>
+      <section
+        ref={containerRef}
+        className="bg-[#F3F4F5] py-32 md:py-40 overflow-x-hidden"
+      >
+        {clusters.map((cluster, index) => {
+          const isEven = index % 2 === 0;
 
-        /* ===== simulated per-cluster scroll slice ===== */
-        const start = index * 0.25;
-        const end = start + 0.5;
+          const start = index * 0.25;
+          const end = start + 0.5;
 
-        const tallY = useTransform(scrollYProgress, [start, end], [-44, 44]);
-        const wideY = useTransform(scrollYProgress, [start, end], [-28, 28]);
-        const mediumY = useTransform(scrollYProgress, [start, end], [-20, 20]);
+          const tallY = useTransform(scrollYProgress, [start, end], [-44, 44]);
+          const wideY = useTransform(scrollYProgress, [start, end], [-28, 28]);
+          const mediumY = useTransform(scrollYProgress, [start, end], [-20, 20]);
 
-        return (
-          <div key={index} className="mb-56">
-            <div className="grid grid-cols-12 gap-x-8 px-6 md:px-10">
+          const openGallery = () => {
+            setLightboxImages([
+              { src: cluster.images.tall },
+              { src: cluster.images.wide },
+              { src: cluster.images.medium },
+            ]);
+            setLightboxOpen(true);
+          };
 
-              {/* SIDE CAPTION */}
-              <div
-                className={`
-                  col-span-12 md:col-span-3
-                  flex items-center
-                  ${isEven ? "order-1" : "order-2"}
-                `}
-              >
-                <div className="max-w-xs">
-                  <h2 className="text-2xl tracking-wide text-neutral-800">
-                    {cluster.title}
-                  </h2>
-                  <p className="mt-1 text-xs uppercase tracking-[0.2em] text-neutral-500">
-                    {cluster.location}
-                  </p>
-                  <p className="mt-4 text-sm leading-relaxed text-neutral-600">
-                    {cluster.description}
-                  </p>
-                </div>
-              </div>
+          return (
+            <div key={index} className="mb-56">
+              <div className="grid grid-cols-12 gap-x-8 px-6 md:px-10">
 
-              {/* IMAGE GRID */}
-              <div
-                className={`
-                  col-span-12 md:col-span-9
-                  grid grid-cols-12 gap-x-5 gap-y-10
-                  ${isEven ? "order-2" : "order-1"}
-                `}
-              >
-                {/* TALL */}
-                <div className="col-span-5 row-span-2 relative aspect-[2/3] overflow-hidden">
-                  <motion.div
-                    style={{ y: tallY }}
-                    className="absolute inset-0 scale-[1.1]"
+                {/* SIDE CAPTION */}
+                <div
+                  className={`
+                    col-span-12 md:col-span-3
+                    flex items-center
+                    ${isEven ? "order-1" : "order-2"}
+                  `}
+                >
+                  <div
+                    className={`
+                      max-w-xs
+                      pb-8 md:pb-0
+                      ${!isEven ? "mt-6 md:mt-0" : ""}
+                    `}
                   >
-                    <Image
-                      src={cluster.images.tall}
-                      alt=""
-                      fill
-                      className="object-cover"
-                    />
-                  </motion.div>
-                </div>
+                    <h2 className="text-[clamp(20px,5vw,24px)] leading-[1.3] tracking-wide text-neutral-800">
+                      {cluster.title}
+                    </h2>
 
-                {/* WIDE */}
-                <div className="col-span-7 relative aspect-[16/10] overflow-hidden">
-                  <motion.div
-                    style={{ y: wideY }}
-                    className="absolute inset-0 scale-[1.08]"
-                  >
-                    <Image
-                      src={cluster.images.wide}
-                      alt=""
-                      fill
-                      className="object-cover"
-                    />
-                  </motion.div>
-                </div>
+                    <p className="mt-1.5 text-[11px] uppercase tracking-[0.22em] text-neutral-500">
+                      {cluster.location}
+                    </p>
 
-                {/* MEDIUM — WITH HOVER OVERLAY */}
-                <div className="col-span-6 -mt-4 relative aspect-[4/3] overflow-hidden group cursor-pointer">
-                  <motion.div
-                    style={{ y: mediumY }}
-                    className="absolute inset-0 scale-[1.07]"
-                  >
-                    <Image
-                      src={cluster.images.medium}
-                      alt=""
-                      fill
-                      className="object-cover"
-                    />
-                  </motion.div>
-
-                  {/* OVERLAY */}
-                  <div className="pointer-events-none absolute inset-0 bg-black/0 transition-colors duration-300 group-hover:bg-black/30" />
-
-                  {/* TEXT */}
-                  <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
-                    <span className="opacity-0 translate-y-2 transition-all duration-300 group-hover:opacity-100 group-hover:translate-y-0 text-xs uppercase tracking-[0.25em] text-white">
-                      View Project
-                    </span>
+                    <p className="mt-3 md:mt-4 text-[14px] md:text-sm leading-[1.7] text-neutral-600">
+                      {cluster.description}
+                    </p>
                   </div>
                 </div>
+
+                {/* IMAGE GRID — UNCHANGED */}
+                <div
+                  className={`
+                    col-span-12 md:col-span-9
+                    grid grid-cols-12 gap-x-5 gap-y-10
+                    ${isEven ? "order-2" : "order-1"}
+                  `}
+                >
+                  {/* TALL */}
+                  <div className="col-span-5 row-span-2 relative aspect-[2/3] overflow-hidden">
+                    <motion.div style={{ y: tallY }} className="absolute inset-0 scale-[1.1]">
+                      <Image src={cluster.images.tall} alt="" fill className="object-cover" />
+                    </motion.div>
+                  </div>
+
+                  {/* WIDE */}
+                  <div className="col-span-7 relative aspect-[16/10] overflow-hidden">
+                    <motion.div style={{ y: wideY }} className="absolute inset-0 scale-[1.08]">
+                      <Image src={cluster.images.wide} alt="" fill className="object-cover" />
+                    </motion.div>
+                  </div>
+
+                  {/* MEDIUM */}
+                  <div
+                    onClick={openGallery}
+                    className="col-span-6 -mt-4 relative aspect-[4/3] overflow-hidden group cursor-pointer"
+                  >
+                    <motion.div style={{ y: mediumY }} className="absolute inset-0 scale-[1.07]">
+                      <Image src={cluster.images.medium} alt="" fill className="object-cover" />
+                    </motion.div>
+
+                    <div className="pointer-events-none absolute inset-0 bg-black/0 transition-colors duration-300 group-hover:bg-black/30" />
+
+                    <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+                      <span className="opacity-0 translate-y-2 transition-all duration-300 group-hover:opacity-100 group-hover:translate-y-0 text-xs uppercase tracking-[0.25em] text-white">
+                        View Project
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
               </div>
             </div>
-          </div>
-        );
-      })}
-    </section>
+          );
+        })}
+      </section>
+
+      <Lightbox
+        open={lightboxOpen}
+        close={() => setLightboxOpen(false)}
+        slides={lightboxImages}
+        carousel={{ finite: true }}
+        animation={{ fade: 300 }}
+        styles={{
+          container: { backgroundColor: "rgba(0,0,0,0.95)" },
+        }}
+      />
+    </>
   );
 }
 

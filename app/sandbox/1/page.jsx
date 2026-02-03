@@ -886,30 +886,22 @@ function OurProjectApproach() {
           <div className="w-full md:w-[55%] flex flex-col">
             {/* HEADER */}
             <div className="mb-16 md:mb-24 max-w-[520px]">
-              <h2
-                ref={headerRef}
-                className="
-                  font-normal
-                  text-[clamp(18px,1.7vw,22px)]
-                  leading-[1.45]
-                  tracking-tight
-                "
-              >
-                Our approach follows a{" "}
-                <span className="font-[Canela] font-medium">
-                  structured and methodical process
-                </span>{" "}
-                from early planning and technical review through to{" "}
-                <span className="font-[Canela] font-medium">
-                  final handover
-                </span>
-                , ensuring every project is executed with clarity, control, and{" "}
-                <span className="font-[Canela] font-medium">
-                  consistent quality
-                </span>
-                .
-              </h2>
-            </div>
+  <h2
+    ref={headerRef}
+    className="
+      font-normal
+      text-[clamp(18px,1.7vw,22px)]
+      leading-[1.45]
+      tracking-tight
+    "
+  >
+    Our approach follows a structured and methodical process from early
+    planning and technical review through to final handover, ensuring
+    every project is executed with clarity, control, and consistent
+    quality.
+  </h2>
+</div>
+
 
             {/* STEPS */}
             <div className="flex flex-col divide-y divide-[#7d8f7d]/25">

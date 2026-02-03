@@ -329,7 +329,7 @@ function About() {
     <section
       ref={sectionRef}
       data-theme="light"
-      className="relative flex h-screen w-full items-center justify-center overflow-hidden bg-[#F3F4F5] text-[#2f3b2f]"
+      className="relative flex h-screen w-full items-center justify-center overflow-hidden bg-[#fffcf7] text-[#2f3b2f]"
     >
       {/* ================= BACKGROUND ================= */}
       <div className="absolute inset-0">
@@ -384,7 +384,7 @@ function About() {
 
 function VisionMissionPurpose() {
   const sectionRef = useRef(null);
-  const imageRefs = useRef([]);
+  const maskRefs = useRef([]);
 
   const ITEMS = [
     {
@@ -412,18 +412,18 @@ function VisionMissionPurpose() {
 
   useEffect(() => {
     const ctx = gsap.context(() => {
-      imageRefs.current.forEach((img) => {
-        if (!img) return;
+      maskRefs.current.forEach((mask) => {
+        if (!mask) return;
 
-        gsap.set(img, { scale: 1.06 });
+        gsap.set(mask, { width: 0 });
 
-        gsap.to(img, {
-          scale: 1,
-          duration: 1.6,
-          ease: "sine.out",
+        gsap.to(mask, {
+          width: "100%",
+          duration: 1.2,
+          ease: "power2.out",
           scrollTrigger: {
-            trigger: img.parentElement,
-            start: "top 75%",
+            trigger: mask,
+            start: "top bottom",
             once: true,
           },
         });
@@ -435,9 +435,10 @@ function VisionMissionPurpose() {
 
   return (
     <section
+     data-theme="light"
       ref={sectionRef}
       className="
-        relative w-full bg-[#F3F4F5]
+        relative w-full bg-[#fffcf7]
         py-20
         md:min-h-[80vh]
       "
@@ -453,22 +454,23 @@ function VisionMissionPurpose() {
             <div
               key={item.title}
               className="
-                group relative overflow-hidden bg-neutral-200
+                group relative overflow-hidden
+                bg-[#fffcf7]
                 h-[420px]
                 md:h-auto
               "
             >
-              {/* IMAGE */}
+              {/* ================= FRAME / MASK (WIDTH REVEAL) ================= */}
               <div
-                ref={(el) => (imageRefs.current[i] = el)}
-                className="
-                  absolute inset-0
-                  bg-cover bg-center
-                  transition-transform duration-500
-                  md:group-hover:scale-[1.03]
-                "
-                style={{ backgroundImage: `url(${item.image})` }}
-              />
+                ref={(el) => (maskRefs.current[i] = el)}
+                className="absolute inset-y-0 left-0 overflow-hidden"
+              >
+                {/* IMAGE — DIAM TOTAL */}
+                <div
+                  className="absolute inset-0 bg-cover bg-left bg-center"
+                  style={{ backgroundImage: `url(${item.image})` }}
+                />
+              </div>
 
               {/* OVERLAY */}
               <div
@@ -481,9 +483,8 @@ function VisionMissionPurpose() {
                 "
               />
 
-              {/* ================= DESKTOP TEXT (ASLI, JANGAN DISENTUH) ================= */}
+              {/* ================= DESKTOP TEXT (ASLI, TIDAK DISENTUH) ================= */}
               <div className="hidden md:block">
-                {/* TITLE */}
                 <div className="absolute bottom-8 left-0 z-20 border-l-4 border-white px-8">
                   <h3
                     className="
@@ -496,7 +497,6 @@ function VisionMissionPurpose() {
                   </h3>
                 </div>
 
-                {/* BODY PANEL */}
                 <div
                   className="
                     absolute bottom-0 left-0 right-0 z-10
@@ -540,6 +540,7 @@ function VisionMissionPurpose() {
   );
 }
 
+
  
 
 function ScopeOfServices() {
@@ -554,43 +555,43 @@ function ScopeOfServices() {
       title: "Consultation & Feasibility",
       desc: "Early-stage project assessment, cost estimation, and technical advice.",
       image:
-        "https://images.unsplash.com/photo-1503387762-592deb58ef4e?q=80&w=1600",
+        "https://i.pinimg.com/736x/54/c9/48/54c9480e739d4ca53af0714e3ec294c0.jpg",
     },
     {
       title: "Project Management",
       desc: "Coordination of timelines, resources, and contractors from start to finish.",
       image:
-        "https://images.unsplash.com/photo-1529429617124-95b109e86bb8?q=80&w=1600",
+        "https://i.pinimg.com/1200x/a3/28/ce/a328ce34b6ad66466b7ab9b03ed4a924.jpg",
     },
     {
       title: "Construction & Execution",
       desc: "Full construction services covering all structural and architectural works.",
       image:
-        "https://images.unsplash.com/photo-1504307651254-35680f356dfd?q=80&w=1600",
+        "https://i.pinimg.com/736x/80/50/be/8050bebdb47f4018ac213261d26d9102.jpg",
     },
     {
       title: "Fit-Out & Finishing Works",
       desc: "Interior and exterior finishing tailored to project requirements.",
       image:
-        "https://images.unsplash.com/photo-1499951360447-b19be8fe80f5?q=80&w=1600",
+        "https://i.pinimg.com/1200x/55/29/82/552982431c45ab8479c50edd7c6575de.jpg",
     },
     {
       title: "Quality Control & Assurance",
       desc: "Inspection, testing, and verification across all stages of construction.",
       image:
-        "https://images.unsplash.com/photo-1581092160562-40aa08e78837?q=80&w=1600",
+        "https://i.pinimg.com/736x/ba/01/ff/ba01ffb8138f41bdf8c22ac18eac67a0.jpg",
     },
     {
       title: "Renovation & Maintenance",
       desc: "Structural or aesthetic upgrades and ongoing upkeep.",
       image:
-        "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=1600",
+        "https://i.pinimg.com/736x/89/33/c5/8933c57fdefa2e4a0991020355303f6b.jpg",
     },
     {
       title: "Health, Safety & Environment (HSE)",
       desc: "Implementation of safety and environmental compliance standards.",
       image:
-        "https://i.pinimg.com/1200x/cc/8f/aa/cc8faa35350040544fa3c0429b828087.jpg",
+        "https://i.pinimg.com/1200x/07/f1/4d/07f14df3e4807fd4f50918d791e587f0.jpg",
     },
   ];
 
@@ -642,15 +643,16 @@ function ScopeOfServices() {
 
   return (
     <section
+     data-theme="light"
       ref={sectionRef}
-      className="relative w-full overflow-hidden bg-[#F3F4F5] text-[#2f3b2f]"
+      className="relative w-full overflow-hidden bg-[#fffcf7] border-t border-black/15 text-[#2f3b2f]"
     >
       {/* MIRRORED BACKGROUND */}
       <div className="pointer-events-none absolute inset-0">
         <img
-          src="/images/image_2026-01-28_20-39-35.png"
+          src="/images/image_2026-01-28_15-42-033.png"
           alt=""
-          className="h-full w-full object-cover opacity-[0.25] scale-x-[-1]"
+          className="h-full w-full object-cover opacity-[0.05] scale-x-[-1]"
         />
       </div>
 
@@ -738,7 +740,7 @@ function ScopeOfServices() {
                       right-0
                       hidden lg:block
                       w-[18vw]
-                      h-[39vh]
+                      h-[32vh]
                       -translate-y-1/2
                       transition-all duration-500 ease-out
                       ${
@@ -855,7 +857,7 @@ function OurProjectApproach() {
     <section
       ref={sectionRef}
       data-theme="light"
-      className="relative w-full overflow-hidden bg-[#F3F4F5] text-[#2f3b2f]"
+      className="relative w-full overflow-hidden bg-[#fffcf7] text-[#2f3b2f]"
     >
       {/* BACKGROUND */}
       <div className="pointer-events-none absolute inset-0">
@@ -1081,16 +1083,11 @@ function WhyChooseUs() {
       <div className="relative z-10 mx-auto px-6 sm:px-10 lg:px-24 py-24">
         {/* HEADER */}
         <div ref={headerRef} className="mb-28 max-w-[680px]">
-          <h2
-            className="
-              font-normal
-              text-[clamp(22px,2.2vw,28px)]
-              leading-[1.45]
-              tracking-tight
-            "
-          >
+          
+        <span className="mb-4 block text-[11px] uppercase tracking-[0.25em] text-white/65">
             Why Choose Us
-          </h2>
+          </span>
+           
         </div>
 
         {/* ITEMS */}
@@ -1253,6 +1250,7 @@ function CoreValues() {
 
   return (
     <section
+     data-theme="dark"
       ref={sectionRef}
       className="
         relative w-full overflow-hidden text-white
@@ -1415,7 +1413,7 @@ function KataraSection() {
     <>
       <section
         ref={containerRef}
-        className="bg-[#F3F4F5] py-32 md:py-40 overflow-x-hidden"
+        className="bg-[#fffcf7] py-32 md:py-40 overflow-x-hidden"
       >
         {clusters.map((cluster, index) => {
           const isEven = index % 2 === 0;
@@ -1534,7 +1532,7 @@ function KataraSection() {
  
 function Footer() {
   return (
-    <section className="relative min-h-screen w-full overflow-hidden bg-black text-white">
+    <section className="relative min-h-[30vh] w-full overflow-hidden bg-black text-white">
       {/* Background */}
       <div className="absolute inset-0">
         <Image
@@ -1550,7 +1548,7 @@ function Footer() {
       <div className="absolute inset-0 bg-black/30" />
 
       {/* Content */}
-      <div className="relative z-10 flex min-h-screen flex-col justify-between px-6 py-8 md:px-12 lg:px-20">
+      <div className="relative z-10 flex min-h-[30vh] flex-col justify-between px-6 py-8 md:px-12 lg:px-20">
         
         {/* Top tagline */}
         <div className="text-center">
@@ -1611,19 +1609,61 @@ function Footer() {
   );
 }
 
-export default function Page() {
+export default  function Page() {
+  const pageRef = useRef(null);
+
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      const pinnedSections = gsap.utils.toArray("[data-pin]");
+
+      pinnedSections.forEach((section) => {
+        // timeline biar pin + motion nyatu
+        const tl = gsap.timeline({
+          scrollTrigger: {
+            trigger: section,
+            start: "top top",
+            end: "+=100%",
+            pin: true,
+            pinSpacing: false,
+            scrub: true,          // 🔥 bikin dia ikut scroll
+            anticipatePin: 1,
+          },
+        });
+
+        // subtle upward drift
+        tl.fromTo(
+          section,
+          { y: 0 },
+          {
+            y: -40,               // 🔧 tweak: -40 / -60 / -80
+            ease: "none",
+          }
+        );
+      });
+    }, pageRef);
+
+    return () => ctx.revert();
+  }, []);
+
   return (
-     <>
-     <Header/>
-     <Hero/>
-     <About/>
-     <VisionMissionPurpose/>
-     <CoreValues/>
-     <OurProjectApproach/>
-     <ScopeOfServices/>
-     <WhyChooseUs/>
-     <KataraSection/>
-     <Footer/>
-     </>
+    <div ref={pageRef}>
+      <Header />
+      <Hero />
+      <About />
+      <VisionMissionPurpose />
+    
+      <CoreValues />
+      {/* ================= PINNED + SUBTLE MOVE ================= */}
+     
+      <section data-pin></section>
+      <OurProjectApproach />
+      
+   
+      {/* ================= NORMAL SCROLL ================= */}
+      <ScopeOfServices />
+      <WhyChooseUs />
+      <KataraSection />
+      <Footer />
+    </div>
   );
 }

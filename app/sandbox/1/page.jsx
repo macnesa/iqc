@@ -329,7 +329,7 @@ function About() {
     <section
       ref={sectionRef}
       data-theme="light"
-      className="relative flex h-screen w-full items-center justify-center overflow-hidden bg-[#F3F4F5] text-neutral-900"
+      className="relative flex h-screen w-full items-center justify-center overflow-hidden bg-[#F3F4F5] text-[#2f3b2f]"
     >
       {/* ================= BACKGROUND ================= */}
       <div className="absolute inset-0">
@@ -352,7 +352,6 @@ function About() {
             text-[clamp(20px,2.2vw,28px)]
             leading-[1.3]
             tracking-[-0.005em]
-            text-neutral-900
           "
         >
           We are a Bali-based construction and quality control company built on
@@ -414,6 +413,8 @@ function VisionMissionPurpose() {
   useEffect(() => {
     const ctx = gsap.context(() => {
       imageRefs.current.forEach((img) => {
+        if (!img) return;
+
         gsap.set(img, { scale: 1.06 });
 
         gsap.to(img, {
@@ -433,13 +434,29 @@ function VisionMissionPurpose() {
   }, []);
 
   return (
-    <section ref={sectionRef} className="relative w-full bg-[#F3F4F5] py-20">
+    <section
+      ref={sectionRef}
+      className="
+        relative w-full bg-[#F3F4F5]
+        py-20
+        md:min-h-[80vh]
+      "
+    >
       <div className="mx-auto w-full max-w-7xl px-6 md:px-12">
-        <div className="grid grid-cols-1 md:grid-cols-3 md:h-[480px]">
+        <div
+          className="
+            grid grid-cols-1 md:grid-cols-3
+            md:min-h-[60vh]
+          "
+        >
           {ITEMS.map((item, i) => (
             <div
               key={item.title}
-              className="group relative overflow-hidden bg-neutral-200 h-[420px] md:h-auto"
+              className="
+                group relative overflow-hidden bg-neutral-200
+                h-[420px]
+                md:h-auto
+              "
             >
               {/* IMAGE */}
               <div
@@ -515,7 +532,6 @@ function VisionMissionPurpose() {
                   {item.body}
                 </p>
               </div>
-
             </div>
           ))}
         </div>
@@ -627,7 +643,7 @@ function ScopeOfServices() {
   return (
     <section
       ref={sectionRef}
-      className="relative w-full overflow-hidden bg-[#F3F4F5] text-black"
+      className="relative w-full overflow-hidden bg-[#F3F4F5] text-[#2f3b2f]"
     >
       {/* MIRRORED BACKGROUND */}
       <div className="pointer-events-none absolute inset-0">
@@ -690,7 +706,7 @@ function ScopeOfServices() {
                 <div
                   className="
                     font-base
-                    text-[clamp(26px,3.6vw,40px)]
+                    text-[clamp(26px,3.0vw,35px)]
                     leading-[1.15]
                     tracking-[-0.02em]
                     lg:whitespace-nowrap
@@ -892,7 +908,7 @@ function OurProjectApproach() {
                   className="
                     relative
                     py-10
-                    md:py-20
+                    md:py-14
                     md:grid md:grid-cols-[1.4fr_1fr]
                     md:gap-16
                   "
@@ -918,7 +934,7 @@ function OurProjectApproach() {
                       font-base
                       pr-10
                       md:pr-0
-                      text-[clamp(22px,6vw,48px)]
+                      text-[clamp(22px,5vw,34px)]
                       leading-[1.2]
                       tracking-[-0.015em]
                     "
@@ -1238,8 +1254,14 @@ function CoreValues() {
   return (
     <section
       ref={sectionRef}
-      className="relative w-full overflow-hidden text-white py-24"
-      style={{ paddingBottom: "260px" }}
+      className="
+        relative w-full overflow-hidden text-white
+        py-24
+        md:min-h-[90vh]
+      "
+      style={{
+        paddingBottom: "260px",
+      }}
     >
       {/* BACKGROUND */}
       <div className="absolute inset-0 bg-[#2c3627]" />
@@ -1270,7 +1292,7 @@ function CoreValues() {
             {CORE_VALUES[activeIndex].text}
           </p>
 
-          {/* MOBILE — TITLES UNDER DESC */}
+          {/* MOBILE — TITLES */}
           <div className="mt-8 space-y-2 md:hidden">
             {CORE_VALUES.map((item, i) => (
               <div
@@ -1287,7 +1309,7 @@ function CoreValues() {
           </div>
         </div>
 
-        {/* DESKTOP — TITLES RIGHT */}
+        {/* DESKTOP — TITLES */}
         <div className="hidden md:flex col-span-7 items-start justify-end">
           <div className="space-y-3 text-right">
             {CORE_VALUES.map((item, i) => (

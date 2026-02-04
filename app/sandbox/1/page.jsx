@@ -657,6 +657,11 @@ function ScopeOfServices() {
       
       <div className="relative z-10 min-h-screen px-6 sm:px-[6vw] py-20 sm:py-[14vh]">
         <div className="mb-24 sm:mb-28 max-w-full">
+          
+        <span className="block sm:hidden mb-6 text-[42px] font-[Canela] leading-[1.1]">
+            Scope of Services
+          </span>
+          
           <span className="hidden sm:block mb-4 text-[11px] uppercase tracking-[0.25em] text-black/50">
             Scope of services
           </span>

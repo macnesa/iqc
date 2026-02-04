@@ -1,6 +1,7 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Providers from "./providers";
+import Script from "next/script";
  
 export const metadata = {
   title: "iQC — Iconic Quality Consultants",
@@ -11,13 +12,12 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <head>
-        {/* Plausible Analytics */}
-        <script
-          async
-          src="https://plausible.io/js/pa-VQzAAPgeNtX1WdZOzc-KO.js"
+     <head>
+        <Script
+          strategy="afterInteractive"
           data-domain="iqc-eta.vercel.app"
-        ></script>
+          src="https://plausible.io/js/script.js"
+        />
       </head>
 
       <body className="antialiased">

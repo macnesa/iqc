@@ -645,6 +645,16 @@ function ScopeOfServices() {
       ref={sectionRef}
       className="relative w-full overflow-hidden bg-[#fffcf7] text-[#2f3b2f]"
     >
+      
+      {/* MIRRORED BACKGROUND */}
+      <div className="pointer-events-none absolute inset-0">
+        <img
+          src="/images/image_2026-01-28_15-42-033.png"
+          alt=""
+          className="h-full w-full object-cover opacity-[0.05] scale-x-[-1]"
+        />
+      </div>
+      
       <div className="relative z-10 min-h-screen px-6 sm:px-[6vw] py-20 sm:py-[14vh]">
         <div className="mb-24 sm:mb-28 max-w-full">
           <span className="hidden sm:block mb-4 text-[11px] uppercase tracking-[0.25em] text-black/50">
@@ -829,7 +839,7 @@ function OurProjectApproach() {
         <img
           src="/images/image_2026-01-28_20-39-35.png"
           alt=""
-          className="h-full w-full object-cover opacity-[0.25]"
+          className="h-full w-full object-cover opacity-[0.35]"
         />
       </div>
 

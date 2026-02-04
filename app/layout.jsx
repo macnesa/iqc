@@ -11,23 +11,16 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-         <head>
+      <head>
         {/* Plausible Analytics */}
         <script
           async
           src="https://plausible.io/js/pa-VQzAAPgeNtX1WdZOzc-KO.js"
           data-domain="iqc-eta.vercel.app"
         ></script>
-
-<script>
-  window.plausible=window.plausible||function(){(plausible.q=plausible.q||[]).push(arguments)},plausible.init=plausible.init||function(i){plausible.o=i||{}};
-  plausible.init()
-</script>
-
       </head>
-      <body
-        className={`antialiased`}
-      >
+
+      <body className="antialiased">
         <Providers>
           {children}
         </Providers>
@@ -35,3 +28,4 @@ export default function RootLayout({ children }) {
     </html>
   );
 }
+

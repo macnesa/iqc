@@ -602,7 +602,6 @@ function ScopeOfServices() {
       split.lines.forEach((line) => {
         const wrapper = document.createElement("div");
         wrapper.style.overflow = "hidden";
-        wrapper.style.display = "block";
         line.parentNode.insertBefore(wrapper, line);
         wrapper.appendChild(line);
       });
@@ -644,53 +643,26 @@ function ScopeOfServices() {
   return (
     <section
       ref={sectionRef}
-      data-theme="light"
-      className="relative w-full overflow-hidden bg-[#fffcf7] border-t border-black/15 text-[#2f3b2f]"
+      className="relative w-full overflow-hidden bg-[#fffcf7] text-[#2f3b2f]"
     >
-      {/* BACKGROUND */}
-      <div className="pointer-events-none absolute inset-0">
-        <img
-          src="/images/image_2026-01-28_15-42-033.png"
-          alt=""
-          className="h-full w-full object-cover opacity-[0.05] scale-x-[-1]"
-        />
-      </div>
-
-      {/* CONTENT */}
       <div className="relative z-10 min-h-screen px-6 sm:px-[6vw] py-20 sm:py-[14vh]">
-        {/* LABEL / MOBILE TITLE */}
         <div className="mb-24 sm:mb-28 max-w-full">
-          {/* MOBILE ONLY — CANELA */}
-          <span className="block sm:hidden mb-6 text-[42px] font-[Canela] leading-[1.1]">
-            Scope of Services
-          </span>
-
-          {/* DESKTOP ONLY — LABEL */}
           <span className="hidden sm:block mb-4 text-[11px] uppercase tracking-[0.25em] text-black/50">
             Scope of services
           </span>
 
           <h2
             ref={headerRef}
-            className="
-              font-normal
-              text-[clamp(18px,1.9vw,23px)]
-              leading-[1.45]
-              tracking-tight
-              max-w-[620px]
-            "
+            className="font-normal text-[clamp(18px,1.9vw,23px)] leading-[1.45] tracking-tight max-w-[620px]"
           >
             Our services cover every stage of the construction process, from early
             consultation and planning to execution, quality control, and long-term
-            maintenance, ensuring projects are managed with clarity, consistency,
-            and accountability.
+            maintenance.
           </h2>
         </div>
 
-        {/* SERVICES LIST */}
         <ul>
           {SERVICES.map((item, i) => {
-            const isLast = i === SERVICES.length - 1;
             const isActive = activeIndex === i;
 
             return (
@@ -699,38 +671,30 @@ function ScopeOfServices() {
                 ref={(el) => (itemsRef.current[i] = el)}
                 onMouseEnter={() => setActiveIndex(i)}
                 onMouseLeave={() => setActiveIndex(null)}
-                className={`
+                className="
                   relative
                   grid
                   grid-cols-[45%_55%]
                   lg:grid-cols-[40%_10%_50%]
                   gap-x-4
                   py-10 sm:py-[3.8vh]
-                  border-t border-black/15
-                  ${isLast ? "border-b" : ""}
-                `}
+                "
               >
-                {/* TITLE */}
-                <div
-                  className="
-                    font-[Canela]
-                    text-[clamp(26px,3vw,35px)]
-                    leading-[1.15]
-                    tracking-[-0.02em]
-                    lg:whitespace-nowrap
-                  "
-                >
+                {/* divider */}
+                <div className="absolute top-0 left-0 w-full h-px bg-black/15 z-0" />
+
+                <div className="font-[Canela] text-[clamp(26px,3vw,35px)] leading-[1.15] tracking-[-0.02em]">
                   {item.title}
                 </div>
 
                 <div className="hidden lg:block" />
 
-                {/* DESC + IMAGE */}
-                <div className="relative">
+                <div className="relative z-10">
                   <div className="max-w-[340px] text-[clamp(15px,1.25vw,17px)] leading-[1.55] text-black/60">
                     {item.desc}
                   </div>
 
+                  {/* IMAGE */}
                   <div
                     className={`
                       pointer-events-none
@@ -749,11 +713,13 @@ function ScopeOfServices() {
                       }
                     `}
                   >
-                    <img
-                      src={item.image}
-                      alt={item.title}
-                      className="h-full w-full object-cover"
-                    />
+                    <div className="h-full w-full bg-[#fffcf7] p-[2px]">
+                      <img
+                        src={item.image}
+                        alt={item.title}
+                        className="h-full w-full object-cover"
+                      />
+                    </div>
                   </div>
                 </div>
               </li>
@@ -1104,7 +1070,7 @@ function WhyChooseUs() {
                 lg:px-8
                 py-14
                 border-t
-                border-white/20
+                border-white/10
                 lg:border-t-0
                 lg:border-l
                 last:lg:border-r
@@ -1124,6 +1090,7 @@ function WhyChooseUs() {
                   leading-[1.3]
                   tracking-wide 
                   font-[Canela]
+                  md:h-20
                 "
               >
                 {item.title}
@@ -1134,7 +1101,7 @@ function WhyChooseUs() {
                 className="
                   max-w-[42ch]
                   text-[clamp(14px,1.05vw,15.5px)]
-                  leading-[1.85]
+                  leading-[1.45]
                   text-white/70
                 "
               >

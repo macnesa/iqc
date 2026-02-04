@@ -19,16 +19,11 @@ export default function RootLayout({ children }) {
           data-domain="iqc-eta.vercel.app"
         ></script>
 
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              window.plausible = window.plausible || function() {
-                (plausible.q = plausible.q || []).push(arguments)
-              };
-              plausible.init();
-            `,
-          }}
-        />
+<script>
+  window.plausible=window.plausible||function(){(plausible.q=plausible.q||[]).push(arguments)},plausible.init=plausible.init||function(i){plausible.o=i||{}};
+  plausible.init()
+</script>
+
       </head>
       <body
         className={`antialiased`}

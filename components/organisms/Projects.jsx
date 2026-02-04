@@ -1,0 +1,184 @@
+"use client";
+
+import { useRef, useState } from "react";
+import Image from "next/image";
+import { motion, useScroll, useTransform } from "framer-motion";
+import Lightbox from "yet-another-react-lightbox";
+import "yet-another-react-lightbox/styles.css";
+
+export default function Projects() {
+  const containerRef = useRef(null);
+
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [lightboxImages, setLightboxImages] = useState([]);
+
+  const clusters = [
+    {
+      title: "Private Residences",
+      location: "Doha, Qatar",
+      description:
+        "High-end private residential projects delivered under strict quality control and international construction standards.",
+      images: {
+        tall: "/images/capsule/22025364-7853-4189-8c33-093c1c1c085b 2.JPG",
+        wide: "/images/capsule/5041364c-14f0-4b1b-ba03-fa23806b3cf8 2.JPG",
+        medium: "/images/capsule/ca1a0e38-1775-4b6f-affb-234c1217281b 2.JPG",
+      },
+    },
+    {
+      title: "Private Residences",
+      location: "Dubai, UAE",
+      description:
+        "Luxury residential villas developed for expatriate clients, emphasizing durability, material precision, and disciplined execution.",
+      images: {
+        tall: "/images/house/4b095765-4c75-447b-8121-2b7cf16fe831.JPG",
+        wide: "/images/house/8b1b730d-2dbf-4f8d-8e06-61ea6f6506b9 2.JPG",
+        medium: "/images/house/67603a1b-259c-4a0b-8e96-7cca103fb89f 2.JPG",
+      },
+    },
+  ];
+
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start end", "end start"],
+  });
+
+  return (
+    <>
+      <section
+        ref={containerRef}
+        className="bg-[#fffcf7] py-32 md:py-40 overflow-x-hidden"
+      >
+        {clusters.map((cluster, index) => {
+          const isEven = index % 2 === 0;
+
+          const start = index * 0.25;
+          const end = start + 0.5;
+
+          const tallY = useTransform(scrollYProgress, [start, end], [-44, 44]);
+          const wideY = useTransform(scrollYProgress, [start, end], [-28, 28]);
+          const mediumY = useTransform(scrollYProgress, [start, end], [-20, 20]);
+
+          const openGallery = () => {
+            setLightboxImages([
+              { src: cluster.images.tall },
+              { src: cluster.images.wide },
+              { src: cluster.images.medium },
+            ]);
+            setLightboxOpen(true);
+          };
+
+          return (
+            <div key={index} className="mb-56">
+              <div className="grid grid-cols-12 gap-x-8 px-6 md:px-10">
+                {/* SIDE CAPTION */}
+                <div
+                  className={`
+                    col-span-12 md:col-span-3
+                    flex items-center
+                    ${isEven ? "order-1" : "order-2"}
+                  `}
+                >
+                  <div
+                    className={`
+                      max-w-xs
+                      pb-8 md:pb-0
+                      ${!isEven ? "mt-6 md:mt-0" : ""}
+                    `}
+                  >
+                    <h2 className="text-[clamp(20px,5vw,24px)] font-[Canela] leading-[1.3] tracking-wide text-neutral-800">
+                      {cluster.title}
+                    </h2>
+
+                    <p className="mt-1.5 text-[11px] uppercase tracking-[0.22em] text-neutral-500">
+                      {cluster.location}
+                    </p>
+
+                    <p className="mt-3 md:mt-4 text-[14px] md:text-sm leading-[1.7] text-neutral-600">
+                      {cluster.description}
+                    </p>
+                  </div>
+                </div>
+
+                {/* IMAGE GRID */}
+                <div
+                  className={`
+                    col-span-12 md:col-span-9
+                    grid grid-cols-12 gap-x-5 gap-y-10
+                    ${isEven ? "order-2" : "order-1"}
+                  `}
+                >
+                  {/* TALL */}
+                  <div className="col-span-5 row-span-2 relative aspect-[2/3] overflow-hidden">
+                    <motion.div
+                      style={{ y: tallY }}
+                      className="absolute inset-0 scale-[1.1]"
+                    >
+                      <Image
+                        src={cluster.images.tall}
+                        alt=""
+                        fill
+                        className="object-cover"
+                      />
+                    </motion.div>
+                  </div>
+
+                  {/* WIDE */}
+                  <div className="col-span-7 relative aspect-[16/10] overflow-hidden">
+                    <motion.div
+                      style={{ y: wideY }}
+                      className="absolute inset-0 scale-[1.08]"
+                    >
+                      <Image
+                        src={cluster.images.wide}
+                        alt=""
+                        fill
+                        className="object-cover"
+                      />
+                    </motion.div>
+                  </div>
+
+                  {/* MEDIUM */}
+                  <div
+                    onClick={openGallery}
+                    className="col-span-6 -mt-4 relative aspect-[4/3] overflow-hidden group cursor-pointer"
+                  >
+                    <motion.div
+                      style={{ y: mediumY }}
+                      className="absolute inset-0 scale-[1.07]"
+                    >
+                      <Image
+                        src={cluster.images.medium}
+                        alt=""
+                        fill
+                        className="object-cover"
+                      />
+                    </motion.div>
+
+                    <div className="pointer-events-none absolute inset-0 bg-black/0 transition-colors duration-300 group-hover:bg-black/30" />
+
+                    <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+                      <span className="opacity-0 translate-y-2 transition-all duration-300 group-hover:opacity-100 group-hover:translate-y-0 text-xs uppercase tracking-[0.25em] text-white">
+                        View Project
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </section>
+
+      <Lightbox
+        open={lightboxOpen}
+        close={() => setLightboxOpen(false)}
+        slides={lightboxImages}
+        carousel={{ finite: true }}
+        animation={{ fade: 300 }}
+        styles={{
+          container: { backgroundColor: "rgba(0,0,0,0.95)" },
+        }}
+      />
+    </>
+  );
+}

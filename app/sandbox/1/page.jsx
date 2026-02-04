@@ -129,7 +129,6 @@ function Header() {
   );
 }
 
-
 function Hero() {
   const [opened, setOpened] = useState(false);
   const sectionRef = useRef(null);
@@ -381,7 +380,6 @@ function About() {
   );
 }
 
-
 function VisionMissionPurpose() {
   const sectionRef = useRef(null);
   const maskRefs = useRef([]);
@@ -539,10 +537,7 @@ function VisionMissionPurpose() {
     </section>
   );
 }
-
-
  
-
 function ScopeOfServices() {
   const [activeIndex, setActiveIndex] = useState(null);
 
@@ -745,10 +740,7 @@ function ScopeOfServices() {
     </section>
   );
 }
-
-
-
-
+ 
 function OurProjectApproach() {
   const sectionRef = useRef(null);
   const headerRef = useRef(null);
@@ -947,8 +939,6 @@ function OurProjectApproach() {
   );
 }
 
-
-
 function WhyChooseUs() {
   const sectionRef = useRef(null);
   const headerRef = useRef(null);
@@ -1129,9 +1119,6 @@ function WhyChooseUs() {
     </section>
   );
 }
-
-
-
 
 function CoreValues() {
   const CORE_VALUES = [
@@ -1319,7 +1306,6 @@ function CoreValues() {
   );
 }
 
- 
 function Value({ left, top, title, text }) {
   return (
     <div
@@ -1506,8 +1492,6 @@ function KataraSection() {
   );
 }
 
-
- 
 function Footer() {
   return (
     <section className="relative min-h-[55vh] w-full overflow-hidden bg-black text-white">

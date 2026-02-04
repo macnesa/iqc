@@ -15,7 +15,7 @@ export default function RootLayout({ children }) {
         className={`antialiased`}
       >
         <Providers>
-        {children}
+          {children}
         </Providers>
       </body>
     </html>

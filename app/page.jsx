@@ -1,8 +1,9 @@
 "use client";
 
 import { useRef, useEffect, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
 import { gsap } from "@/lib/gsap";
+import Image from "next/image";
 
 import Header from "@/components/molecules/Header";
 import Hero from "@/components/organisms/Hero";
@@ -10,7 +11,7 @@ import About from "@/components/organisms/About";
 import VisionMissionPurpose from "@/components/organisms/VisionMissionPurpose";
 import CoreValues from "@/components/organisms/CoreValues";
 import ProjectApproach from "@/components/organisms/ProjectApproach";
-import ScopeOfServices from "@/components/organisms/ScopeOfServices";
+import WhatWeDo from "@/components/organisms/WhatWeDo";
 import WhyChooseUs from "@/components/organisms/WhyChooseUs";
 import Projects from "@/components/organisms/Projects";
 import Footer from "@/components/organisms/Footer";
@@ -58,6 +59,39 @@ function OpeningShutter({ opened }) {
         </div>
       )}
     </AnimatePresence>
+  );
+}
+
+function ParallaxImageSection() {
+  const sectionRef = useRef(null);
+
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ["start end", "end start"],
+  });
+
+  // Parallax movement (halus, dewasa)
+  const imageY = useTransform(scrollYProgress, [0, 1], [-60, 60]);
+
+  return (
+    <section
+      ref={sectionRef}
+      className="relative h-[45vh] md:h-[75vh] w-full overflow-hidden bg-neutral-200"
+    >
+      <motion.div
+        style={{ y: imageY }}
+        className="absolute inset-0 scale-[1.08]"
+      >
+        <Image
+          src="https://images.unsplash.com/photo-1416331108676-a22ccb276e35?q=80&w=2067&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" 
+          // ganti dengan path gambar lo
+          alt=""
+          fill
+          priority
+          className="object-cover"
+        />
+      </motion.div>
+    </section>
   );
 }
 
@@ -113,19 +147,24 @@ export default function Page() {
 
       {/* PAGE CONTENT */}
       <Header />
+      
       <Hero opened={opened} />
 
-      <About />
-      <VisionMissionPurpose />
-      <CoreValues />
+      {/* <About /> */}
+      {/* <ParallaxImageSection/> */}
+      {/* <VisionMissionPurpose /> */}
+      {/* <CoreValues /> */}
 
-      <section data-pin></section>
-      <ProjectApproach />
+     
+      {/* <ProjectApproach /> */}
 
-      <ScopeOfServices />
-      <WhyChooseUs />
+      <WhatWeDo />
+      {/* <WhyChooseUs /> */}
       <Projects />
       <Footer />
+      <section data-pin>
+        
+      </section>
     </div>
   );
 }

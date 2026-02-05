@@ -129,27 +129,15 @@ function Header() {
   );
 }
 
-function Hero() {
-  const [opened, setOpened] = useState(false);
+function Hero({ opened }) {
   const sectionRef = useRef(null);
-
-  // =========================
-  // AUTO OPENING SEQUENCE
-  // =========================
-  useEffect(() => {
-    const t = setTimeout(() => {
-      setOpened(true);
-    }, 500);
-    return () => clearTimeout(t);
-  }, []);
 
   // =========================
   // SLICE CONFIG (LOCKED)
   // =========================
   const SLICE_COUNT = 10;
-  const SLICE_HEIGHT = 100 / SLICE_COUNT;
-  const SLICE_DURATION = 1.9;
   const SLICE_STAGGER = 0.11;
+  const SLICE_DURATION = 1.9;
 
   const SLICE_CLEAN_TIME =
     (SLICE_COUNT - 1) * SLICE_STAGGER + SLICE_DURATION;
@@ -198,7 +186,7 @@ function Hero() {
         <div className="absolute inset-0 bg-black/30" />
       </motion.div>
 
-      {/* ================= HERO CONTENT (LOGO PARALLAX PRESERVED) ================= */}
+      {/* ================= HERO CONTENT ================= */}
       <div className="relative z-10 flex h-full items-center justify-center">
         <motion.div
           style={{
@@ -219,37 +207,6 @@ function Hero() {
           </div>
         </motion.div>
       </div>
-
-      {/* ================= OPENING SHUTTER ================= */}
-      <AnimatePresence>
-        {!opened && (
-          <div className="pointer-events-none absolute inset-0 z-50">
-            {Array.from({ length: SLICE_COUNT }).map((_, i) => {
-              const reverseIndex = SLICE_COUNT - i - 1;
-
-              return (
-                <motion.div
-                  key={i}
-                  initial={{ height: "100%" }}
-                  animate={{ height: "0%" }}
-                  exit={{ height: "0%" }}
-                  transition={{
-                    duration: SLICE_DURATION,
-                    delay: reverseIndex * SLICE_STAGGER,
-                    ease: [0.45, 0.0, 0.55, 1],
-                  }}
-                  className="absolute left-0 w-full bg-white"
-                  style={{
-                    top: `${i * SLICE_HEIGHT}%`,
-                    height: `${SLICE_HEIGHT}%`,
-                    transformOrigin: "top",
-                  }}
-                />
-              );
-            })}
-          </div>
-        )}
-      </AnimatePresence>
     </section>
   );
 }
@@ -640,7 +597,6 @@ function ScopeOfServices() {
       ref={sectionRef}
       className="relative w-full overflow-hidden bg-[#fffcf7] text-[#2f3b2f]"
     >
-      
       {/* MIRRORED BACKGROUND */}
       <div className="pointer-events-none absolute inset-0">
         <img
@@ -649,14 +605,13 @@ function ScopeOfServices() {
           className="h-full w-full object-cover opacity-[0.05] scale-x-[-1]"
         />
       </div>
-      
+
       <div className="relative z-10 min-h-screen px-6 sm:px-[6vw] py-20 sm:py-[14vh]">
         <div className="mb-24 sm:mb-28 max-w-full">
-          
-        <span className="block sm:hidden mb-6 text-[42px] font-[Canela] leading-[1.1]">
+          <span className="block sm:hidden mb-6 text-[42px] font-[Canela] leading-[1.1]">
             Scope of Services
           </span>
-          
+
           <span className="hidden sm:block mb-4 text-[11px] uppercase tracking-[0.25em] text-black/50">
             Scope of services
           </span>

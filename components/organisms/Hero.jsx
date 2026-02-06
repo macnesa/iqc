@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import Image from "next/image";
 import { motion, useScroll, useTransform } from "framer-motion";
 
@@ -70,7 +70,7 @@ export default function Hero({ opened }) {
             grid-rows-[auto_1fr_auto]
             px-6
             pb-10
-            md:px-10
+            md:px-14
           "
         >
           {/* ========== LOGO (TOP LEFT) ========== */}
@@ -99,14 +99,14 @@ export default function Hero({ opened }) {
               className="
                 text-white
                 font-normal
-                leading-[1.1]
+                leading-[1.0]
                 tracking-tight
-                text-[clamp(28px,4.5vw,56px)]
+                text-[clamp(28px,4.0vw,56px)]
               "
             >
               Building Bali{" "}
-              <span className="font-[Canela] italic">Better</span> — through
-              precision and international standards.
+              <span className="font-[Canela] ">Better</span> — Through
+              Precision and International Standards
             </h1>
 
             <p

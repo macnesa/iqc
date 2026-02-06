@@ -62,7 +62,11 @@ function OpeningShutter({ opened }) {
   );
 }
 
-function ParallaxImageSection() {
+function ParallaxImageSection({
+  imageUrl = "https://images.unsplash.com/photo-1416331108676-a22ccb276e35?q=80&w=2067&auto=format&fit=crop&ixlib=rb-4.1.0",
+  alt = "",
+  heightClass = "h-[45vh] md:h-[75vh]",
+}) {
   const sectionRef = useRef(null);
 
   const { scrollYProgress } = useScroll({
@@ -70,27 +74,40 @@ function ParallaxImageSection() {
     offset: ["start end", "end start"],
   });
 
-  // Parallax movement (halus, dewasa)
+  // image parallax
   const imageY = useTransform(scrollYProgress, [0, 1], [-60, 60]);
+
+  // OVERLAY: GELAP → GELAP TIPIS (TIDAK PERNAH 0)
+  const overlayOpacity = useTransform(
+    scrollYProgress,
+    [0, 0.25],
+    [0.6, 0.45] // ⬅️ PENTING: STOP DI 0.25, BUKAN 0
+  );
 
   return (
     <section
       ref={sectionRef}
-      className="relative h-[45vh] md:h-[75vh] w-full overflow-hidden bg-neutral-200"
+      className={`relative w-full overflow-hidden ${heightClass}`}
     >
+      {/* IMAGE */}
       <motion.div
         style={{ y: imageY }}
         className="absolute inset-0 scale-[1.08]"
       >
         <Image
-          src="https://images.unsplash.com/photo-1416331108676-a22ccb276e35?q=80&w=2067&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" 
-          // ganti dengan path gambar lo
-          alt=""
+          src={imageUrl}
+          alt={alt}
           fill
           priority
           className="object-cover"
         />
       </motion.div>
+
+      {/* OVERLAY — SELALU ADA */}
+      <motion.div
+        style={{ opacity: overlayOpacity }}
+        className="absolute inset-0 bg-black pointer-events-none"
+      />
     </section>
   );
 }
@@ -143,23 +160,24 @@ export default function Page() {
   return (
     <div ref={pageRef} className="relative">
       {/* OPENING SHUTTER — DIPINDAHKAN */}
-      <OpeningShutter opened={opened} />
+      {/* <OpeningShutter opened={opened} /> */}
 
       {/* PAGE CONTENT */}
       <Header />
       
       <Hero opened={opened} />
 
-      {/* <About /> */}
+      <About />
       {/* <ParallaxImageSection/> */}
       {/* <VisionMissionPurpose /> */}
       {/* <CoreValues /> */}
 
      
-      {/* <ProjectApproach /> */}
-
+      <ParallaxImageSection imageUrl="https://images.unsplash.com/photo-1728049006252-020dfb896026?q=80&w=2942&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"/>
       <WhatWeDo />
-      {/* <WhyChooseUs /> */}
+      <ParallaxImageSection imageUrl="https://images.unsplash.com/photo-1728048756779-ed7f123d371f?q=80&w=2942&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"/>
+      <ProjectApproach />
+      <WhyChooseUs />
       <Projects />
       <Footer />
       <section data-pin>

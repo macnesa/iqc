@@ -10,9 +10,7 @@ export default function WhyChooseUs() {
 
   const ITEMS = [
     {
-      title: "We Plan with Precision",
-      desc:
-        "Every project starts with clear timelines, budgets, and technical coordination.",
+      title: "Structured planning and realistic timelines",
       icon: (
         <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="1.5">
           <rect x="3" y="4" width="18" height="16" rx="2" />
@@ -21,17 +19,15 @@ export default function WhyChooseUs() {
       ),
     },
     {
-      title: "We Supervise Daily",
-      desc: "Consistent on-site management ensures progress and quality.",
+      title: "Daily site supervision and accountability",
       icon: (
         <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="1.5">
-          <path d="M3 11h18M5 7h14M7 15h10" />
+          <path d="M12 3l8 4v6c0 5-3.5 7.5-8 9-4.5-1.5-8-4-8-9V7l8-4z" />
         </svg>
       ),
     },
     {
-      title: "We Communicate Clearly",
-      desc: "Updates, reporting, and client feedback are part of our process.",
+      title: "Clear, transparent communication",
       icon: (
         <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="1.5">
           <path d="M21 15a4 4 0 0 1-4 4H7l-4 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4z" />
@@ -39,21 +35,10 @@ export default function WhyChooseUs() {
       ),
     },
     {
-      title: "We Deliver on Time",
-      desc: "Schedules are planned realistically and tracked closely.",
+      title: "Consistent quality from start to finish",
       icon: (
         <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="1.5">
-          <circle cx="12" cy="12" r="9" />
-          <path d="M12 7v5l3 3" />
-        </svg>
-      ),
-    },
-    {
-      title: "We Control Quality",
-      desc: "Materials and workmanship are inspected at every stage.",
-      icon: (
-        <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="1.5">
-          <path d="M12 3l8 4v6c0 5-3.5 7.5-8 9-4.5-1.5-8-4-8-9V7l8-4z" />
+          <path d="M4 12l5 5L20 6" />
         </svg>
       ),
     },
@@ -124,7 +109,7 @@ export default function WhyChooseUs() {
             grid
             grid-cols-1
             sm:grid-cols-2
-            lg:grid-cols-5
+            lg:grid-cols-4
           "
         >
           {ITEMS.map((item, i) => (
@@ -151,29 +136,16 @@ export default function WhyChooseUs() {
               {/* title */}
               <h4
                 className="
-                  mb-5
                   font-semibold
-                  text-[clamp(23px,1.2vw,18px)]
+                  text-[clamp(22px,1.2vw,18px)]
                   leading-[1.3]
-                  tracking-wide 
+                  tracking-wide
                   font-[Canela]
-                  md:h-20
+                  md:h-24
                 "
               >
                 {item.title}
               </h4>
-
-              {/* desc */}
-              <p
-                className="
-                  max-w-[42ch]
-                  text-[clamp(14px,1.05vw,15.5px)]
-                  leading-[1.45]
-                  text-white/70
-                "
-              >
-                {item.desc}
-              </p>
             </div>
           ))}
         </div>

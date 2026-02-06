@@ -27,19 +27,6 @@ export default function About() {
         opacity: 0.15,
       });
 
-      gsap.to(leadSplit.lines, {
-        y: 0,
-        opacity: 1,
-        duration: 1.05,
-        ease: "power3.out",
-        stagger: 0.065,
-        scrollTrigger: {
-          trigger: sectionRef.current,
-          start: "top 52%",
-          once: true,
-        },
-      });
-
       /* ================= BODY SPLIT ================= */
       const bodySplit = new SplitText(bodyRef.current, { type: "lines" });
 
@@ -56,18 +43,31 @@ export default function About() {
         opacity: 0.2,
       });
 
+      /* ================= SHARED SCROLLTRIGGER ================= */
+      const triggerConfig = {
+        trigger: sectionRef.current,
+        start: "top 52%",
+        once: true,
+      };
+
+      /* LEAD — FIRST */
+      gsap.to(leadSplit.lines, {
+        y: 0,
+        opacity: 1,
+        duration: 1.05,
+        ease: "power3.out",
+        stagger: 0.065,
+        scrollTrigger: triggerConfig,
+      });
+
+      /* BODY — SECOND (NO DELAY) */
       gsap.to(bodySplit.lines, {
         y: 0,
         opacity: 1,
         duration: 0.9,
         ease: "power3.out",
         stagger: 0.05,
-        delay: 0.08,
-        scrollTrigger: {
-          trigger: sectionRef.current,
-          start: "top 50%",
-          once: true,
-        },
+        scrollTrigger: triggerConfig,
       });
     }, sectionRef);
 
@@ -92,7 +92,7 @@ export default function About() {
       </div>
 
       {/* ================= CONTENT ================= */}
-      <div className="relative z-10 mx-auto max-w-[820px] px-10 text-left">
+      <div className="relative z-10 mx-auto max-w-[720px] px-10 text-left">
         {/* LEAD */}
         <p
           ref={leadRef}
@@ -100,14 +100,14 @@ export default function About() {
             mb-14
             text-[clamp(20px,2.2vw,28px)]
             leading-[1.3]
-            tracking-[-0.005em]
+            tracking-tight
           "
         >
-          We are a Bali-based construction and quality control company built on
-          international experience and local insight. Our team has delivered
-          major projects across the GCC — a region renowned for its demanding
-          standards of quality and precision. We bring that same commitment to
-          professionalism and on-time delivery to every project in Bali.
+          We are a Bali-based construction and quality control company bringing
+          international project experience to the local market. Our team has
+          delivered diverse projects across the GCC and applies the same
+          discipline, quality, and structured management to every project in
+          Bali.
         </p>
 
         {/* BODY */}
@@ -115,15 +115,14 @@ export default function About() {
           ref={bodyRef}
           className="
             max-w-[640px]
-            text-[clamp(14.5px,1.05vw,16px)]
-            leading-[1.75]
+            text-[clamp(20px,2.2vw,28px)]
+            leading-[1.3]
+            tracking-tight
             text-neutral-700
           "
         >
-          With years on the island and a deep understanding of the Balinese
-          market, we recognize the importance of clear communication, dependable
-          supervision, and efficient execution. Our goal is simple — to deliver
-          construction that is well-managed, transparent, and built to last.
+          We focus on what matters most — strong supervision, clear
+          communication, and reliable delivery.
         </p>
       </div>
     </section>

@@ -1,17 +1,13 @@
 "use client";
 
-import { useRef, useEffect } from "react";
-import { gsap, SplitText } from "@/lib/gsap";
+import { useEffect, useRef } from "react";
+import { gsap } from "@/lib/gsap";
 
 export default function WhatWeDo() {
-  const sectionRef = useRef(null);
-  const headerRef = useRef(null);
-  const itemsRef = useRef([]);
-  const imageRefs = useRef([]); // 👈 NEW
+  const imageRefs = useRef([]);
+  const textRefs = useRef([]);
+  const headerRefs = useRef([]);
 
-  /* =========================
-     DATA ASLI (TIDAK DIUBAH)
-  ========================= */
   const SERVICES = [
     {
       title: "Consultation & Feasibility",
@@ -50,210 +46,175 @@ export default function WhatWeDo() {
     },
   ];
 
-  /* =========================
-     LAYOUT PRESETS (TIDAK DIUBAH)
-  ========================= */
-  const LAYOUTS = [
-    {
-      grid: "1fr 1fr 1fr 1fr 1fr",
-      imageCol: "1 / span 1",
-      imageAlign: "start",
-      imageWidth: "16vw",
-      textCol: "3 / span 2",
-      textAlign: "center",
-      padding: "36px",
-    },
-    {
-      grid: "1fr 1fr 1fr 1fr 1fr",
-      imageCol: "5 / span 1",
-      imageAlign: "end",
-      imageWidth: "16vw",
-      textCol: "2 / span 2",
-      textAlign: "start",
-      padding: "44px",
-    },
-    {
-      grid: "1fr 1fr 1fr 1fr 1fr",
-      imageCol: "3 / span 1",
-      imageAlign: "end",
-      imageWidth: "16vw",
-      textCol: "1 / span 2",
-      textAlign: "start",
-      padding: "50px",
-    },
-    {
-      grid: "1fr 1fr 1fr 1fr 1fr",
-      imageCol: "2 / span 1",
-      imageAlign: "start",
-      imageWidth: "16vw",
-      textCol: "4 / span 2",
-      textAlign: "end",
-      padding: "40px",
-    },
-    {
-      grid: "1fr 1fr 1fr 1fr 1fr",
-      imageCol: "1 / span 2",
-      imageAlign: "start",
-      imageWidth: "16vw",
-      textCol: "4 / span 2",
-      textAlign: "center",
-      padding: "48px",
-    },
-    {
-      grid: "1fr 1fr 1fr 1fr 1fr",
-      imageCol: "4 / span 1",
-      imageAlign: "end",
-      imageWidth: "16vw",
-      textCol: "2 / span 2",
-      textAlign: "start",
-      padding: "34px",
-    },
-    {
-      grid: "1fr 1fr 1fr 1fr 1fr",
-      imageCol: "5 / span 1",
-      imageAlign: "end",
-      imageWidth: "16vw",
-      textCol: "1 / span 3",
-      textAlign: "center",
-      padding: "46px",
-    },
+  const POSITIONS = [
+    { imageLeft: "0%", textLeft: "42%", textAlign: "left" },
+    { imageLeft: "38%", textLeft: "70%", textAlign: "right" },
+    { imageLeft: "100%", textLeft: "30%", textAlign: "left" },
+    { imageLeft: "55%", textLeft: "0%", textAlign: "left" },
+    { imageLeft: "0%", textLeft: "50%", textAlign: "left" },
+    { imageLeft: "60%", textLeft: "0%", textAlign: "right" },
+    { imageLeft: "100%", textLeft: "22%", textAlign: "left" },
   ];
 
-  /* =========================
-     GSAP (REVEAL + PARALLAX)
-  ========================= */
   useEffect(() => {
-    const ctx = gsap.context(() => {
-      // HEADER SPLIT
-      const split = new SplitText(headerRef.current, { type: "lines" });
+    /* IMAGE PARALLAX — DESKTOP ONLY */
+    imageRefs.current.forEach((img) => {
+      if (!img) return;
 
-      gsap.from(split.lines, {
-        y: 18,
-        opacity: 0,
-        stagger: 0.06,
-        duration: 0.8,
-        ease: "power3.out",
-        scrollTrigger: {
-          trigger: sectionRef.current,
-          start: "top 65%",
-          once: true,
-        },
-      });
+      gsap.fromTo(
+        img,
+        { y: -8 },
+        {
+          y: 8,
+          ease: "none",
+          scrollTrigger: {
+            trigger: img,
+            start: "top bottom",
+            end: "bottom top",
+            scrub: 1.2,
+          },
+        }
+      );
+    });
 
-      // ITEM REVEAL
-      gsap.from(itemsRef.current, {
-        y: 16,
-        opacity: 0,
-        stagger: 0.05,
-        duration: 0.7,
-        ease: "power2.out",
-        scrollTrigger: {
-          trigger: sectionRef.current,
-          start: "top 60%",
-          once: true,
-        },
-      });
+    /* HEADER REVEAL */
+    headerRefs.current.forEach((el) => {
+      if (!el) return;
 
-      // IMAGE PARALLAX 👇
-      imageRefs.current.forEach((img, i) => {
-        if (!img) return;
+      gsap.fromTo(
+        el,
+        { y: 40, opacity: 0 },
+        {
+          y: 0,
+          opacity: 1,
+          duration: 1.1,
+          ease: "power3.out",
+          scrollTrigger: {
+            trigger: el,
+            start: "top 85%",
+          },
+        }
+      );
+    });
 
-        gsap.fromTo(
-          img,
-          { y: -20 },
-          {
-            y: 20,
-            ease: "none",
-            scrollTrigger: {
-              trigger: img,
-              start: "top bottom",
-              end: "bottom top",
-              scrub: true,
-            },
-          }
-        );
-      });
-    }, sectionRef);
+    /* TEXT REVEAL */
+    textRefs.current.forEach((el) => {
+      if (!el) return;
 
-    return () => ctx.revert();
+      gsap.fromTo(
+        el,
+        { y: 48, opacity: 0 },
+        {
+          y: 0,
+          opacity: 1,
+          duration: 1,
+          ease: "power3.out",
+          scrollTrigger: {
+            trigger: el,
+            start: "top 105%",
+          },
+        }
+      );
+    });
   }, []);
 
-  /* =========================
-     RENDER
-  ========================= */
   return (
-    <section
-      ref={sectionRef}
-      className="bg-[#fffcf7] text-[#2f3b2f] px-6 sm:px-[6vw] py-24"
-    >
-      <div className="mb-24 max-w-[620px]">
-        <span className="block mb-4 text-[11px] uppercase tracking-[0.25em] text-black/50">
-          Scope of Services
-        </span>
-        <h2
-          ref={headerRef}
-          className="text-[clamp(18px,1.8vw,22px)] leading-[1.45]"
+    <section className="relative bg-[#fffcf7] text-[#2f3b2f] px-5 sm:px-[6vw] py-20">
+      {/* HEADER */}
+      <div className="mb-24 overflow-hidden">
+        <span className="block md:hidden text-[42px] font-[Canela] leading-[1.1]">
+            Our Approach
+          </span>
+        <span
+          ref={(el) => (headerRefs.current[0] = el)}
+          className="hidden sm:block mb-4 text-[11px] uppercase tracking-[0.25em] text-black/50"
         >
-          Our services cover every stage of the construction process, from early
-          consultation and planning to execution, quality control, and long-term
-          maintenance.
-        </h2>
+          What We Do
+        </span>
+
+        <div className="overflow-hidden">
+          <h2
+            ref={(el) => (headerRefs.current[1] = el)}
+            className="text-[clamp(22px,4vw,48px)] leading-[1.3] tracking-[-1.9]"
+          >
+            End-to-end construction and quality control services{" "}
+            <span className="md:font-[Canela] md:font-light">
+              tailored to each project
+            </span>
+          </h2>
+        </div>
       </div>
 
-      <ul>
+      {/* LIST */}
+      <div>
         {SERVICES.map((item, i) => {
-          const layout = LAYOUTS[i];
+          const p = POSITIONS[i];
 
           return (
-            <li
-              key={i}
-              ref={(el) => (itemsRef.current[i] = el)}
-              style={{
-                display: "grid",
-                gridTemplateColumns: layout.grid,
-                paddingBlock: layout.padding,
-                alignItems: "center",
-              }}
-              className="relative"
-            >
-              <div className="absolute top-0 left-0 w-full h-px bg-black/15" />
+            <div key={i} className="relative">
+              <div className="absolute top-0 left-0 w-full h-px bg-neutral-300" />
 
-              {/* IMAGE */}
-              <div
-                className="hidden lg:block overflow-hidden"
-                style={{
-                  gridColumn: layout.imageCol,
-                  gridRow: 1,
-                  justifySelf: layout.imageAlign,
-                  width: layout.imageWidth,
-                }}
-              >
-                <div className="aspect-[16/9] p-[2px] bg-[#fffcf7] overflow-hidden">
-                  <img
-                    ref={(el) => (imageRefs.current[i] = el)}
-                    src={item.image}
-                    alt={item.title}
-                    className="w-full h-full object-cover will-change-transform"
-                  />
+              {/* DESKTOP */}
+              <div className="relative hidden lg:block h-[210px]">
+                {/* IMAGE */}
+                <div
+                  className="absolute top-1/2"
+                  style={{
+                    left: p.imageLeft,
+                    transform:
+                      p.imageLeft === "100%"
+                        ? "translate(-100%, -50%)"
+                        : "translateY(-50%)",
+                  }}
+                >
+                  <div className="w-[300px] aspect-[16/9] overflow-hidden">
+                    <img
+                      ref={(el) => (imageRefs.current[i] = el)}
+                      src={item.image}
+                      alt={item.title}
+                      className="w-full h-full object-cover scale-[1.04]"
+                    />
+                  </div>
+                </div>
+
+                {/* TEXT */}
+                <div
+                  className="absolute top-1/2 overflow-hidden"
+                  style={{
+                    left: p.textLeft,
+                    transform:
+                      p.textLeft === "100%"
+                        ? "translate(-100%, -50%)"
+                        : "translateY(-50%)",
+                    textAlign: p.textAlign,
+                  }}
+                >
+                  <h3
+                    ref={(el) => (textRefs.current[i] = el)}
+                    className="font-[Canela] text-[#2f3b2f]/80 text-[clamp(24px,2.6vw,40px)] leading-[1.05]"
+                  >
+                    {item.title}
+                  </h3>
                 </div>
               </div>
 
-              {/* TITLE */}
-              <div
-                style={{
-                  gridColumn: layout.textCol,
-                  gridRow: 1,
-                  textAlign: layout.textAlign,
-                }}
-              >
-                <h3 className="font-[Canela] text-[clamp(34px,3.0vw,52px)] leading-[1.05] text-[#2f3b2f]/80">
-                  {item.title}
-                </h3>
+              {/* MOBILE — PURE TEXT */}
+              <div className="lg:hidden py-10">
+                <div className="overflow-hidden">
+                  <h3
+                    ref={(el) =>
+                      (textRefs.current[SERVICES.length + i] = el)
+                    }
+                    className="font-[Canela] text-[clamp(26px,7vw,34px)] leading-[1.1]"
+                  >
+                    {item.title}
+                  </h3>
+                </div>
               </div>
-            </li>
+            </div>
           );
         })}
-      </ul>
+      </div>
     </section>
   );
 }

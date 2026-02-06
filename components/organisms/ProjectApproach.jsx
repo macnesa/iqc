@@ -1,48 +1,30 @@
 "use client";
 
 import { useRef, useEffect } from "react";
-import { gsap, SplitText } from "@/lib/gsap";
+import { gsap, ScrollTrigger, SplitText } from "@/lib/gsap";
 
 export default function ProjectApproach() {
   const sectionRef = useRef(null);
   const headerRef = useRef(null);
   const stepsRef = useRef([]);
+  const bgImageRef = useRef(null);
 
   const STEPS = [
-    {
-      index: "01",
-      title: "Planning & Technical Review",
-      desc:
-        "Detailed project assessment and coordination to align design, schedule, and resources.",
-    },
-    {
-      index: "02",
-      title: "Materials Quality Verification",
-      desc:
-        "Careful inspection and approval of materials to meet required standards.",
-    },
-    {
-      index: "03",
-      title: "Skilled Construction Execution",
-      desc:
-        "Professional supervision and workmanship throughout every phase of construction.",
-    },
-    {
-      index: "04",
-      title: "Regular Site Inspections & Reporting",
-      desc:
-        "Ongoing monitoring and transparent communication to ensure quality and progress.",
-    },
-    {
-      index: "05",
-      title: "Final Testing, Commissioning & Handover",
-      desc:
-        "Comprehensive checks, documentation, and client handover upon completion.",
-    },
+    { index: "01", title: "Plan & align scope, schedule, and resources" },
+    { index: "02", title: "Verify materials and workmanship" },
+    { index: "03", title: "Execute with hands-on site supervision" },
+    { index: "04", title: "Inspect, report, and adjust in real time" },
+    { index: "05", title: "Test, commission, and hand over with confidence" },
   ];
 
+  /* =========================
+     GSAP
+  ========================= */
   useEffect(() => {
+    gsap.registerPlugin(ScrollTrigger, SplitText);
+
     const ctx = gsap.context(() => {
+      /* ===== HEADER SPLIT ===== */
       const split = new SplitText(headerRef.current, { type: "lines" });
 
       split.lines.forEach((line) => {
@@ -68,6 +50,7 @@ export default function ProjectApproach() {
         },
       });
 
+      /* ===== STEPS ===== */
       gsap.set(stepsRef.current, { y: 24, opacity: 0 });
 
       gsap.to(stepsRef.current, {
@@ -82,23 +65,42 @@ export default function ProjectApproach() {
           once: true,
         },
       });
+
+      /* ===== IMAGE PARALLAX (IMAGE ONLY) ===== */
+      gsap.fromTo(
+        bgImageRef.current,
+        { yPercent: -8 },
+        {
+          yPercent: 8,
+          ease: "none",
+          scrollTrigger: {
+            trigger: sectionRef.current,
+            start: "top bottom",
+            end: "bottom top",
+            scrub: true,
+          },
+        }
+      );
     }, sectionRef);
 
     return () => ctx.revert();
   }, []);
 
+  /* =========================
+     RENDER
+  ========================= */
   return (
     <section
       ref={sectionRef}
-      data-theme="light"
       className="relative w-full overflow-hidden bg-[#fffcf7] text-[#2f3b2f]"
     >
-      {/* BACKGROUND */}
-      <div className="pointer-events-none absolute inset-0">
+      {/* BACKGROUND FRAME (STATIC) */}
+      <div className="pointer-events-none absolute inset-0 overflow-hidden">
         <img
+          ref={bgImageRef}
           src="/images/image_2026-01-28_20-39-35.png"
           alt=""
-          className="h-full w-full object-cover opacity-[0.35]"
+          className="h-[120%] w-full object-cover opacity-[0.35]"
         />
       </div>
 
@@ -106,38 +108,35 @@ export default function ProjectApproach() {
       <div className="relative z-10 w-full px-6 md:px-16 py-20 md:py-28">
         {/* LABEL */}
         <div className="mb-6 md:absolute md:left-16 md:top-28 md:mb-0">
-          {/* MOBILE ONLY — CANELA */}
-          <span className="block md:hidden text-[42px] font-[Canela] text-[#2f3b2f] leading-[1.1]">
+          <span className="block md:hidden text-[42px] font-[Canela] leading-[1.1]">
             Our Approach
           </span>
 
-          {/* DESKTOP ONLY — SMALL LABEL */}
-          <span className="hidden md:block text-[11px] uppercase tracking-[0.25em] text-[#2f3b2f]/60">
+          <span className="hidden md:block text-[11px] uppercase tracking-[0.25em] opacity-60">
             Our approach
           </span>
         </div>
 
         <div className="flex w-full flex-col md:flex-row">
-          {/* LEFT SPACE (DESKTOP ONLY) */}
+          {/* LEFT SPACE */}
           <div className="hidden md:block md:w-[45%]" />
 
           {/* RIGHT */}
           <div className="w-full md:w-[55%] flex flex-col">
             {/* HEADER */}
-            <div className="mb-16 md:mb-24 max-w-[520px]">
+            <div className="mb-16 md:mb-24 max-w-[560px]">
               <h2
                 ref={headerRef}
                 className="
-                  font-normal
-                  text-[clamp(18px,1.7vw,22px)]
-                  leading-[1.45]
-                  tracking-tight
+                  text-[clamp(22px,3.8vw,43px)]
+                  leading-[1.3]
+                  tracking-[-1.9]
                 "
               >
-                Our approach follows a structured and methodical process from early
-                planning and technical review through to final handover, ensuring
-                every project is executed with clarity, control, and consistent
-                quality.
+                A clear process that keeps{" "}
+                <span className="md:font-[Canela]">
+                  projects on track
+                </span>
               </h2>
             </div>
 
@@ -147,50 +146,28 @@ export default function ProjectApproach() {
                 <div
                   key={step.index}
                   ref={(el) => (stepsRef.current[i] = el)}
-                  className="
-                    relative
-                    py-10
-                    md:py-14
-                    md:grid md:grid-cols-[1.4fr_1fr]
-                    md:gap-16
-                  "
+                  className="relative py-12 md:py-16"
                 >
-                  {/* MOBILE NUMBER */}
-                  <span className="absolute right-0 top-10 text-sm opacity-70 md:hidden">
+                  <span className="absolute right-0 top-10 text-sm opacity-60 md:hidden">
                     ({step.index})
                   </span>
 
-                  {/* TITLE */}
                   <h3
                     className="
                       font-[Canela]
                       pr-10
                       md:pr-0
-                      text-[clamp(22px,5vw,32px)]
-                      leading-[1.2]
-                      tracking-[-0.015em]
+                      text-[clamp(26px,6vw,40px)]
+                      md:text-[clamp(24px,2.4vw,38px)]
+                      leading-[1.15]
+                      tracking-[-0.02em]
                     "
                   >
-                    <span className="hidden md:inline mr-3 align-top text-[clamp(14px,1.1vw,16px)] font-medium tracking-wide">
+                    <span className="hidden md:inline mr-4 align-top text-[clamp(14px,1.1vw,16px)] font-medium tracking-widest opacity-60">
                       ({step.index})
                     </span>
                     {step.title}
                   </h3>
-
-                  {/* DESC */}
-                  <p
-                    className="
-                      mt-4
-                      md:mt-0
-                      max-w-[420px]
-                      text-[clamp(15px,4vw,17px)]
-                      md:text-[clamp(15px,1.25vw,17px)]
-                      leading-[1.5]
-                      text-[#2f3b2f]/70
-                    "
-                  >
-                    {step.desc}
-                  </p>
                 </div>
               ))}
             </div>

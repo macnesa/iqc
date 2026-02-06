@@ -160,7 +160,7 @@ export default function Page() {
   return (
     <div ref={pageRef} className="relative">
       {/* OPENING SHUTTER — DIPINDAHKAN */}
-      {/* <OpeningShutter opened={opened} /> */}
+      <OpeningShutter opened={opened} />
 
       {/* PAGE CONTENT */}
       <Header />
